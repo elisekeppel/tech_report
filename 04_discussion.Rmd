@@ -1,101 +1,41 @@
 # Discussion
 
-To highlight the power of `csasdown` for French compilation we use the companion translation package [rosettafish](https://github.com/pbs-assess/rosettafish) along with some non-classified herring data. Render the document in French to see how every aspect of the document can be controlled in both languages.
+Line-transect surveys 
 
-```{r herring, results='asis', echo=TRUE}
-d <- readr::read_csv(file.path("data", "herring.csv"))
+Map monthly/seasonal tracklines to date - Jan-Mar, Apr-Jun-, Jul-Sep, Oct-Dec 
 
-firstup <- function(x){
-  substr(x, 1, 1) <- toupper(substr(x, 1, 1))
-  x
-}
+Clip by bath layer ~5m to eliminate the shallow areas never surveyable 
 
-firstlower <- function(x){
-  substr(x, 1, 1) <- toupper(substr(x, 1, 1))
-  x
-}
+Include border 
 
-input_data_table <- function(tab,
-                              cap = "",
-                              translate = FALSE,
-                              ...){
-  # Source column
-  tab$Source <- rosettafish::en2fr(tab$Source, translate, allow_missing = TRUE)
-  tmp <- tab$Source
-  nonbracs <- stringr::str_extract(tmp, "[(\\w+ ) ]+(?= +\\()")
-  bracs <- stringr::str_extract(tmp, "(?<=\\()\\w+(?=\\))")
-  if(!all(is.na(bracs) == is.na(nonbracs))){
-    warning("The match of bracketed items in the Source ",
-            "column of the Input data table was incorrect.")
-  }
-  tmp[!is.na(bracs)] <- paste0(rosettafish::en2fr(firstup(nonbracs[!is.na(nonbracs)]),
-                                                  translate),
-                               " (",
-                               firstlower(rosettafish::en2fr(firstup(bracs[!is.na(bracs)]),
-                                                        translate)), ")")
-  tab$Source <- tmp
+Plots: 
 
-  # Data column
-  tmp <- strsplit(tab$Data, ": *")
-  tmp <- lapply(tmp, function(x){
-    j <- firstup(x)
-    j <- rosettafish::en2fr(j, translate = translate, allow_missing = TRUE)
-    if(length(j) > 1){
-      j <- c(j[1], tolower(j[-1]))
-      j <- paste(j, collapse = ": ")
-    }
-    j
-  })
-  tab$Data <- unlist(tmp)
+Planned vs. Realized transects – seasonal 
 
-  # Years column
-  if(translate){
-    tmp <- tab$Years
-    tmp <- strsplit(tab$Years, " *to *")
-    tmp <- lapply(tmp, function(x){
-      paste0("De ", x[1], " \U00E0 ", x[2])
-    })
-    tab$Years <- unlist(tmp)
-  }
+(what are we missing seasonally?) 
 
-  names(tab) <- rosettafish::en2fr(names(tab), translate)
-  csas_table(tab,
-             format = "latex",
-             caption = cap,
-             ...)
-}
-input_data_table(d, translate = french)
-```
+Beaufort diff colours by 0-2, 3+ porpoise (maybe not for publication, but for our planning purposes 
 
-The code above appears quite complex at first, but essentially the data file is read in, and each column is translated with some rules, and finally the column names are translated. The `rosettafish` package has an English-French dictionary for DFO nationwide that you can contribute to by going to the GitHub repository for  [rosettafish](https://github.com/pbs-assess/rosettafish) and reading the README which tells you how.
+Future planning map including survey area with US waters 
 
-When you choose how you want to present your table, you may (should) choose a simpler data format. This particular one has words which may or may not be inside parentheses in the `Source` column, and words which may be separated by colons in the `Data` column. Those are all parsed out in the function which makes the code complex. The `Years` column is also complex because it contains the word "to", e.g. `1972 to 2019` which when translated to French becomes `De 1972 à 2019` which is difficult to write code for. If you chose to have two columns for the year range instead (`Start year` and `End year`) and two columns to represent where the data came from (`Data type` and `Data`) this function would be much simpler. The next code chunk does exactly this.
+Simulate lines in US waters 
 
+Coverage area by season projected forward including US waters 
 
-```{r herring-simple, results='asis', echo=TRUE}
-d <- readr::read_csv(file.path("data", "herring-simple.csv"))
-input_data_table <- function(tab,
-                             cap = "",
-                             translate = FALSE,
-                             ...){
-  # Source column
-  tab$Source <- rosettafish::en2fr(tab$Source, translate, allow_missing = TRUE)
-  tab$`Data type` <- rosettafish::en2fr(tab$`Data type`, translate, allow_missing = TRUE)
-  tab$Data <- rosettafish::en2fr(tab$Data, translate, allow_missing = TRUE)
-  names(tab) <- rosettafish::en2fr(names(tab), translate)
+Seasonal (to date) 
 
-  csas_table(tab,
-             format = "latex",
-             caption = cap,
-             font_size = 10,
-             ...)
-}
-input_data_table(d, translate = french)
-```
-Clearly, this code is much simpler. The `font_size` argument had to be added to the `csas_table()` call to make the table fit on the page, as there are now teo extra columns.
+One for HWs, one for HP (with different detection distances) 
 
-The first time this code was run for the French version though, an error was issued:
+Simulate moving forward (2 more years of year-round survey effort) 
 
-> *Error: The following terms are not in the translation database: Data type, Start year, End year*
+One species (HW and/or HP) - seasonal 
 
-This means that `rosettafish` has no idea what the French translation is for these column names. At this point, we would either change the names of the columns in the data file and code to something `rosettafish` knows about, or add the translation of our terms into `rosettafish`. That is what we have done, so this should compile for you with a correct translation. In your workflow, once you have added your translation and re-installed the `rosettafish` package, your terms will be recognized and translated. A great online translator for this is [DeepTL](https://www.deepl.com/en/home).
+Compare 2 months – sequential? (showing how fast things could fluctuate) 
+
+Compare 2 years (PRISMM? And/or Anna Hall’s data? And/or Raincoast?) 
+
+Estimate total distance surveyed 
+
+Detection functions prelim, 
+
+Plot  

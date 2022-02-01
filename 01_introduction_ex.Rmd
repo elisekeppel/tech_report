@@ -47,7 +47,7 @@ And can be referenced like this: `\@ref(sec:introduction)` which renders to this
 A reference to the equation above looks like this: `\@ref(eq:test)` and renders to this: Figure \@ref(eq:test). The labels for any type of reference (except for bibliography citations) are shown in Table \@ref(tab:ref-tab).
 
 ```{r ref-tab}
-refs_tab <- tribble(
+refs_tab <- dplyr::tribble(
      ~`Reference type`,                    ~`Rmarkdown code`,
              "Section",        "`\\@ref(sec:section-label)`",
           "Subsection",  "`\\@ref(subsec:subsection-label)`",

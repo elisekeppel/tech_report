@@ -1,6 +1,23 @@
 # Introduction {#sec:introduction}
 
-Welcome to report generation using `csasdown`. Included in this example document are many useful bits of information on how to write a reproducible report document using  the `csasdown` package, which is based on [Rmarkdown](https://rmarkdown.rstudio.com/) and [Bookdown](https://bookdown.org/). The information given in this example document should be used with all three `csasdown` document types: Research Document (`resdoc`), Science Response (`sr`), and Technical Report (`techreport`).
+From our brainstorm document (open in Edge)
+[README](https://086gc.sharepoint.com/:w:/r/sites/SCI-PacificAquaticEcosystemandMarineMammalsSectionESD-CeMoRe/Shared%20Documents/CeMoRe/Reporting/Year%201%20report%20files/CeMoRE%20inital%20brainstorm%20for%20report.docx?d=w5e3300f7ac084311b81c9eee4d199acf&csf=1&web=1&e=Vu5Qsy)
+
+Introduce project goals, objectives, including rationale for project (TMX recommendations) 
+
+Background info: Surveys done in the area to date and limitations/gaps (i.e. almost all are summer only): 
+
+Anna Hall’s porpoise surveys 
+
+US aerial porpoise surveys 
+
+CRP aerial surveys (Nichol ~2017) 
+
+Raincoast 
+
+PRISMM 
+
+Kepple ferry surveys 
 
 If you get stuck on anything, read the `csasdown` [README](https://github.com/pbs-assess/csasdown/blob/master/README.md) carefully and all the [Wiki pages](https://github.com/pbs-assess/csasdown/wiki). There are many tips and tricks located in those pages. 
 
@@ -47,7 +64,7 @@ And can be referenced like this: `\@ref(sec:introduction)` which renders to this
 A reference to the equation above looks like this: `\@ref(eq:test)` and renders to this: Figure \@ref(eq:test). The labels for any type of reference (except for bibliography citations) are shown in Table \@ref(tab:ref-tab).
 
 ```{r ref-tab}
-refs_tab <- tribble(
+refs_tab <- dplyr::tribble(
      ~`Reference type`,                    ~`Rmarkdown code`,
              "Section",        "`\\@ref(sec:section-label)`",
           "Subsection",  "`\\@ref(subsec:subsection-label)`",
