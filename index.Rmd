@@ -1,6 +1,6 @@
 ---
-title: "Title Here (*Latin Species Name*)"
-year: 2021
+title: "Cetacean monitoring and research in the Salish Sea: First year field  summary"
+year: 2022
 report_number: nnn
 author: |
   Christie ?. McMillan^1^ and
