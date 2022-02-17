@@ -79,7 +79,7 @@ options(xtable.comment = FALSE)
 options(kableExtra.latex.load_packages = FALSE)
 ```
 
-```{r load-libraries, cache=FALSE}
+```{r load-libraries, cache=FALSE, echo=F}
 # `french` and `prepub` variables are extracted from the YAML headers above and
 #  are used throughout the document. To make the document all in french, change
 #  the line in the YAML header above to `french: true`
@@ -98,12 +98,47 @@ if (french) {
 }
 
 # add other packages here:
+library(plyr)
 library(dplyr)
 library(ggplot2)
 library(readr)
 library(rosettafish)
 library(tibble)
 library(csasdown)
+
+library(devtools)
+library(PBStools)
+library(PBSdata)
+library(data.table)
+library(purrr)
+library(magrittr)
+library(lubridate)
+library(sf)
+library(sp)
+library(lwgeom)
+library(maps)
+library(maptools)
+library(rgeos)
+library(rgdal)
+library(gdalUtils)
+library(proj4)
+library(grid)
+library(gridExtra)
+library(kableExtra)
+library(marmap)
+library(Distance)
+library(ggnewscale)
+library(gtable)
+library(RColorBrewer)
+library(raster)
+library(rasterly)
+library(stringr)
+library(beepr)
+library(rmarkdown)
+library(tinytex)
+cemore <- "C:/Users/keppele/Documents/GitHub/cemore/cemore"
+  devtools::load_all(cemore)
+  sf::sf_use_s2(FALSE)
 ```
 
 ---

@@ -29,3 +29,5 @@ techreport.tex
 *.sty
 *.upa
 *.utf8.md
+
+data/
