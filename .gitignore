@@ -17,6 +17,7 @@ techreport.Rmd
 techreport.tex
 
 *.aux
+*.csv
 *.jpg
 *.html
 *.knit.md
