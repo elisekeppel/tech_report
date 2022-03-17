@@ -1,12 +1,13 @@
 ---
-title: "Cetacean monitoring and research in the Salish Sea: First year field  summary"
+title: "Cetacean monitoring and research in the Salish Sea: First year field summary"
 year: 2022
 report_number: nnn
 author: |
-  Christie ?. McMillan^1^ and
+  Christie J. McMillan^1^ and
   Elise A. Keppel^1^ and
-  Lisa ?. Spaven^1^
-author_list: "McMillan, C. and Keppel, E.A. and Spaven, L."
+  Lisa D. Spaven^1^ and
+  Thomas P. Doniol-Valcroze^1^
+author_list: "McMillan, C. and Keppel, E.A. and Spaven, L. and Doniol-Valcroze, T.P."
 region: Pacific Region
 isbn: ""
 address: |
@@ -20,7 +21,7 @@ abstract: |
 abstract_other: |
   Voici le résumé. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 output:
- csasdown::techreport_pdf:
+ csasdown::techreport_word:
    french: false
    copy_sty: true
    line_nums: true
@@ -79,7 +80,7 @@ options(xtable.comment = FALSE)
 options(kableExtra.latex.load_packages = FALSE)
 ```
 
-```{r load-libraries, cache=FALSE, echo=F}
+```{r load-libraries, cache=FALSE, echo=F, message=F,results='hide'}
 # `french` and `prepub` variables are extracted from the YAML headers above and
 #  are used throughout the document. To make the document all in french, change
 #  the line in the YAML header above to `french: true`
@@ -98,6 +99,7 @@ if (french) {
 }
 
 # add other packages here:
+options(java.parameters="-Xmx12000m")
 library(plyr)
 library(dplyr)
 library(ggplot2)
@@ -128,6 +130,8 @@ library(kableExtra)
 library(marmap)
 library(Distance)
 library(ggnewscale)
+library(ggpattern)
+library(gridpattern)
 library(gtable)
 library(RColorBrewer)
 library(raster)
@@ -136,9 +140,11 @@ library(stringr)
 library(beepr)
 library(rmarkdown)
 library(tinytex)
+library(magick)
+library(cowplot)
 cemore <- "C:/Users/keppele/Documents/GitHub/cemore/cemore"
   devtools::load_all(cemore)
-  sf::sf_use_s2(FALSE)
+  suppressMessages(sf::sf_use_s2(FALSE))
 ```
 
 ---
