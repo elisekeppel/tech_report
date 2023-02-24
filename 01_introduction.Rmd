@@ -1,81 +1,11 @@
-# Introduction {#sec:introduction}
+# INTRODUCTION {#sec:introduction}
 
-From our brainstorm document (open in Edge)
-[README](https://086gc.sharepoint.com/:w:/r/sites/SCI-PacificAquaticEcosystemandMarineMammalsSectionESD-CeMoRe/Shared%20Documents/CeMoRe/Reporting/Year%201%20report%20files/CeMoRE%20inital%20brainstorm%20for%20report.docx?d=w5e3300f7ac084311b81c9eee4d199acf&csf=1&web=1&e=Vu5Qsy)
+Developing effective mitigation measures to reduce the impact of threats from human activities on cetacean species requires an understanding of their seasonal abundance, distribution, and habitat use. Vessel strikes and chronic acoustic disturbance from vessel noise are recognized as threats to the recovery or conservation of all cetacean species at risk in Canadian Pacific waters (Fisheries and Oceans Canada, 2007; 2009; 2011a; 2011b; 2013; 2018a; 2018b; Gregr et al., 2006). In February 2019, the National Energy Board submitted its Reconsideration Report on the Trans Mountain Expansion (TMX) Project (hereafter referred to as the Project), which would twin an existing pipeline from Edmonton, Alberta to the Westridge Marine Terminal in Burnaby, B.C. (Figure \@ref(fig:plot-study-area)), and increase tanker traffic in the southern Salish Sea (National Energy Board, 2019). The report recommended approval of the Project, subject to 156 conditions and 16 recommendations. Recommendations 5 and 6 outlined the need for spatial and temporal measures to offset the underwater noise and vessel strike risk posed to marine mammals by Project-related marine shipping. Much of the focus of mitigation measures to date has been related to impacts on the Endangered southern resident killer whale population. The need for additional data on other at-risk cetaceans was identified to inform potential mitigation measures and their effectiveness.
 
-Introduce project goals, objectives, including rationale for project (TMX recommendations) 
+Marine mammal species frequently sighted in the southern Salish Sea include humpback whales (*Megaptera novaeangliae*), harbour porpoises (*Phocoena phocoena*), Dall’s porpoises (*Phocoenoides dalli*), harbour seals (*Phoca vitulina*), Steller sea lions (*Eumetopias jubatus*), southern resident killer whales, and Bigg’s (transient) killer whales (*Orcinus orca*). There is significant and ongoing work underway to assess the abundance and distribution of several of these species, including Steller sea lions, harbour seals, and southern resident and Bigg’s killer whales (e.g. DFO, 2021 ; Ford et al., 2013; Ford et al., 2017; Olesiuk, 2010;  Olesiuk, 2018; Towers et al., 2019). There are, however, significant data gaps in knowledge of the seasonal abundance and habitat use of humpback whales, harbour porpoises, and Dall’s porpoises in the area. Humpbacks and harbour porpoises are listed as Special Concern under the *Species at Risk Act* (SARA). Other less frequently observed cetacean species in the area include fin whales (*Balaenoptera physalus*, Threatened under SARA), grey whales (*Eschrichtius robustus*, Special Concern), and minke whales (*Balaenoptera acutorostrata*, Not At Risk). 
 
-Background info: Surveys done in the area to date and limitations/gaps (i.e. almost all are summer only): 
+Although there have been previous systematic aerial (Jefferson et al., 2016; Nichol et al., 2017) and boat-based (Best et al., 2015; Doniol-Valcroze et al., in press; Williams and Thomas, 2007; Wright et al., 2021) cetacean surveys that have included waters of the southern Salish Sea, many of these surveys were either conducted during a single season (Doniol-Valcroze et al., in press; Jefferson et al., 2016; Williams and Thomas, 2007; Wright et al., 2021), or have limited sample sizes which led to data from multiple seasons being pooled for analyses (Nichol et al., 2017). These surveys do not provide the information about seasonal or annual trends in abundance, distribution, or habitat use required to inform spatial and temporal mitigation measures in the TMX Project area.  
 
-Anna Hall’s porpoise surveys 
+Specific year-round systematic cetacean surveys in Canadian portions of the southern Salish Sea are limited to two studies, each of which were limited in spatial scope and comprised a single year of effort. These surveys were both undertaken at the turn of the century and are thus too outdated to inform current management. One of these studies focused exclusively on harbour porpoises in Haro and eastern Juan de Fuca Straits and used weekly line-transect surveys conducted over a one-year period to obtain abundance and density estimates for harbour porpoises in summer (April – October) and winter (November – March; Hall, 2004). The other study used BC Ferries as platforms of opportunity to conduct multi-species line-transect surveys for marine mammals between Vancouver and Nanaimo (Keple, 2002). 
 
-US aerial porpoise surveys 
-
-CRP aerial surveys (Nichol ~2017) 
-
-Raincoast 
-
-PRISMM 
-
-Kepple ferry surveys 
-
-If you get stuck on anything, read the `csasdown` [README](https://github.com/pbs-assess/csasdown/blob/master/README.md) carefully and all the [Wiki pages](https://github.com/pbs-assess/csasdown/wiki). There are many tips and tricks located in those pages. 
-
-Inserting a hyperlink in Rmarkdown is easy, just look at the code for the paragraph above. It is located in **01_introduction.Rmd**
-
-Include references in the **bib/refs.bib** file in the same format as the example that is already in the file. This is called *BiBLaTeX* format. Once you have added the reference, you can cite it using Rmarkdown in the following ways:
-
-1. In parentheses: `[@edwards2013]` - renders as: [@edwards2013]
-2. Inline: `@edwards2013` - renders as: @edwards2013
-3. Without author: `[-@edwards2013]` - renders as: [-@edwards2013]
-
-Some references: [@francis2011, @edwards2013, @swainbenoit2015].
-
-Note that the year part of the citation is clickable and will take you directly to the reference in the References section.
-
-Here is an example equation with the code used to generate it. Note that `csasdown` automatically numbers it on the right-hand side of the page. It does this consecutively throughout the document sections, but appendices are each numbered on their own, e.g. A.1, A.2, ... for Appendix A, and B.1, B.2, ... for Appendix B.
-
-````
-\begin{equation}
-  1 + 1
-  \label{eq:test}
-\end{equation}
-````
-
-\begin{equation}
-  1 + 1
-  \label{eq:test}
-\end{equation}
-
-A reference can be included anywhere in the text, to refer to a section or appendix. For the first appendix in this document, the code looks like this: `\@ref(app:first-appendix)`. Adding that code inline will create a clickable link in the output file: See Appendix \@ref(app:first-appendix).
-
-The code inside the parentheses comes from the tag after the header for the section. For the appendix, the whole header line looks like:
-
-`# THE FIRST APPENDIX {#app:first-appendix}`
-
-Everything in the curly braces except for the hash sign is the tag you use to reference a section.
-
-This section's header line looks like this:
-
-`# Introduction {#sec:introduction}`
-
-And can be referenced like this: `\@ref(sec:introduction)` which renders to this: Section \@ref(sec:introduction).
-
-A reference to the equation above looks like this: `\@ref(eq:test)` and renders to this: Figure \@ref(eq:test). The labels for any type of reference (except for bibliography citations) are shown in Table \@ref(tab:ref-tab).
-
-```{r ref-tab}
-refs_tab <- dplyr::tribble(
-     ~`Reference type`,                    ~`Rmarkdown code`,
-             "Section",        "`\\@ref(sec:section-label)`",
-          "Subsection",  "`\\@ref(subsec:subsection-label)`",
-            "Appendix",       "`\\@ref(app:appendix-label)`",
-            "Equation",        "`\\@ref(eq:equation-label)`",
-              "Figure",         "`\\@ref(fig:figure-label)`",
-               "Table",          "`\\@ref(tab:table-label)`")
-
-csasdown::csas_table(refs_tab,
-  align = c("r", "r"),
-  caption = ifelse(french,
-                   "French goes here",
-                   "Reference types and their Rmarkdown reference codes."))
-```
+Here, preliminary results from 14 months of line-transect surveys in the southern Salish Sea are reported. The data collected during these surveys will not only inform measures under TMX Recommendations 5 and 6, but can also inform assessments of vessel impacts from other proposed projects in this area (e.g. Roberts Bank Terminal 2) and mitigation options for these impacts. These data can also provide insight about the seasonal and spatial risk of other threats to cetaceans (e.g. entanglement).

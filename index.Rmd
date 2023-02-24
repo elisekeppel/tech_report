@@ -1,30 +1,30 @@
 ---
-title: "Cetacean monitoring and research in the Salish Sea: First year field summary"
+title: "Preliminary report on the seasonal abundance and distribution of cetaceans in the southern Salish Sea in response to TMX Recommendations 5 and 6 (Year 1)"
 year: 2022
-report_number: nnn
+report_number: 3474
 author: |
-  Christie J. McMillan^1^ and
-  Elise A. Keppel^1^ and
-  Lisa D. Spaven^1^ and
-  Thomas P. Doniol-Valcroze^1^
-author_list: "McMillan, C. and Keppel, E.A. and Spaven, L. and Doniol-Valcroze, T.P."
+  Christie J. McMillan,
+  Elise A. Keppel,
+  Lisa D. Spaven and
+  Thomas Doniol-Valcroze
+author_list: "McMillan, C.J., Keppel, E.A., Spaven, L.D. and Doniol-Valcroze, T."
 region: Pacific Region
-isbn: ""
+isbn: "978-0-660-43270-0"
 address: |
-  ^1^Pacific Biological Station\
+  Pacific Biological Station\
      Fisheries and Oceans Canada, 3190 Hammond Bay Road\
      Nanaimo, British Columbia, V9T 6N7, Canada\
 phone: "(236) 330-1435"
 author_footnote: "Email: Christie.McMillan@dfo-mpo.gc.ca | telephone: (236) 330-1435"
 abstract: |
-  Here is the abstract text. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  In response to the need for spatial and temporal management measures to offset risks posed from marine shipping associated with the Trans Mountain Expansion Project, surveys are being undertaken to assess seasonal abundance and distribution of cetaceans in the southern Salish Sea and Swiftsure Bank. Fourteen systematic line-transect surveys between September 2020 and February 2022 resulted in 3,802 km of survey effort and 964 sightings of five cetacean species. Distance sampling methods were used to produce preliminary abundance estimates for the three cetacean species most frequently encountered: humpback whales, harbour porpoises, and Dall’s porpoises. These species were sighted in the area year-round, although seasonal differences in the abundance and distribution of each species were evident. Estimated abundance ranged from 18 (95% CI: 9 - 36) in winter to 274 (95% CI: 160 - 468) in fall for humpback whales; from 584 (95% CI: 274 – 1,242) in winter to 1,430 (95% CI: 986– 2,073) in fall for harbour porpoises; and from 89 (95% CI: 36 - 218) in summer to 362 (95% CI: 203 - 643) in winter for Dall’s porpoises. Continued data collection is required to: 1) refine seasonal abundance estimates and assess seasonal and interannual variability; and 2) acquire sufficient data to produce maps of spatially-explicit seasonal predicted density for humpback whales, harbour porpoises, Dall’s porpoises, and potentially killer whale ecotypes throughout the study area to support future management measures.
 abstract_other: |
-  Voici le résumé. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+ Il est nécessaire de connaître l'abondance et la distribution saisonnières des cétacés dans le sud de la mer des Salish et sur le banc Swiftsure pour élaborer des mesures de gestion spatiales et temporelles afin de compenser les risques posés par la navigation maritime associée au projet d’agrandissement du réseau de Trans Mountain (TMX). Quatorze relevés mensuels systématiques le long de transects linéaires ont été menés dans la zone du projet TMX entre septembre 2020 et février 2022. Cet effort de 3 802 km a produit 964 observations de cinq espèces de cétacés. Des méthodes d'échantillonnage des distance ont été utilisées pour produire des estimations saisonnières d'abondance et de densité pour les trois espèces les plus fréquemment rencontrées : les rorquals à bosse, les marsouins communs et les marsouins de Dall. Ces trois espèces ont été observées dans la zone toute l'année, avec cependant des différences saisonnières évidentes d’abondance et de distribution. L'abondance estimée variait d'un minimum de 18 (Intervalle de Confiance à 95 % : 9 - 36) en hiver à un maximum de 274 (IC à 95 % : 160 - 468) en automne pour les rorquals à bosse; de 584 (IC à 95 % : 274 – 1 242) en hiver à 1 430 (IC à 95 % : 986 – 2 073) en automne pour les marsouins communs ; et de 89 (IC 95 % : 36 - 218) en été à 362 (IC 95 % : 203 - 643) en hiver pour les marsouins de Dall. Il est nécessaire de continuer la collecte de données pour : 1) affiner les estimations saisonnières de l'abondance de ces cétacés et évaluer la variabilité saisonnière et interannuelle ; et 2) acquérir suffisamment de données pour produire des cartes de la densité saisonnière prévue pour les rorquals à bosse, les marsouins communs, les marsouins de Dall et potentiellement les écotypes d'épaulards dans toute la zone d'étude afin d’informer les futures mesures de gestion.
 output:
- csasdown::techreport_word:
+ csasdown::techreport_pdf:
    french: false
    copy_sty: true
-   line_nums: true
+   line_nums: false
    line_nums_mod: 1
    lot_lof: false
 type:
@@ -38,6 +38,7 @@ bibliography: bib/refs.bib
 # Any extra LaTeX code for the header:
 header-includes:
  - \usepackage{float}
+ - \usepackage{bm}
 ---
 
 ```{r setup, echo=FALSE, cache=FALSE, message=FALSE, results='hide', warning=FALSE}
@@ -76,6 +77,9 @@ opts_chunk$set(
   fig.align = fig_align,
   fig.pos = fig_pos
 )
+fig_axis_size <- 11
+fig_legend_size <- 11
+fig_axis_title_size <- 13 
 options(xtable.comment = FALSE)
 options(kableExtra.latex.load_packages = FALSE)
 ```
@@ -93,10 +97,10 @@ if (length(grep("pdf", names(meta)))) {
   prepub <- meta$`csasdown::techreport_word`$prepub
 }
 csl <- "csl/csas.csl"
-if (french) {
-  csl <- "csl/csas-french.csl"
-  options(OutDec = ",")
-}
+# if (french) {
+#   csl <- "csl/csas-french.csl"
+#   options(OutDec = ",")
+# }
 
 # add other packages here:
 options(java.parameters="-Xmx12000m")
@@ -104,10 +108,9 @@ library(plyr)
 library(dplyr)
 library(ggplot2)
 library(readr)
-library(rosettafish)
+# library(rosettafish)
 library(tibble)
 library(csasdown)
-
 library(devtools)
 library(PBStools)
 library(PBSdata)
@@ -141,7 +144,9 @@ library(beepr)
 library(rmarkdown)
 library(tinytex)
 library(magick)
+library(terra)
 library(cowplot)
+library(english)
 cemore <- "C:/Users/keppele/Documents/GitHub/cemore/cemore"
   devtools::load_all(cemore)
   suppressMessages(sf::sf_use_s2(FALSE))

@@ -1,98 +1,56 @@
-# Methods
+# METHODS {#sec:methods}
 
-*Note: to change to word doc, change techreport_pdf in index.Rmd to techreport_word*
+## STUDY AREA
+The study area was designed to correspond with the area impacted by TMX Project-related marine shipping, including relevant sections of the marine shipping route between the Westridge Marine Terminal and Swiftsure Bank (i.e., the Strait of Georgia, Boundary Pass, Haro Strait, Juan de Fuca Strait, and out to the 12-nautical-mile territorial sea limit off southwestern Vancouver Island; National Energy Board, 2019).
 
-From our brainstorm document (open in Edge)
-(https://086gc.sharepoint.com/:w:/r/sites/SCI-PacificAquaticEcosystemandMarineMammalsSectionESD-CeMoRe/Shared%20Documents/CeMoRe/Reporting/Year%201%20report%20files/CeMoRE%20inital%20brainstorm%20for%20report.docx?d=w5e3300f7ac084311b81c9eee4d199acf&csf=1&web=1&e=Vu5Qsy)
+The study area is comprised of the inbound and outbound shipping lanes (traffic separation scheme, TSS) with a 6 km buffer on either side (Figure \@ref(fig:plot-study-area)). The TSS spans Canadian and U.S. waters, and understanding cetacean density and habitat use in adjacent U.S. portions of the marine shipping route is critical for informing impacts of vessel traffic and potential mitigation measures in the TMX Project area. However, restrictions associated with the COVID-19 pandemic required survey transects to be clipped to cover Canadian waters only for the period between September 2020 and February 2022. The 6 km buffer was designed to provide good coverage of each of the sections of the marine shipping route, while also allowing for a survey that could be completed in 5-6 days for the Canadian portions of the study area.
 
-##Study area: CM
+## SURVEY DESIGN
+Systematic, boat-based cetacean surveys were designed to be conducted monthly throughout the study area. For the purposes of survey design, the area was divided into seven sections and transect lines were generated for each section. This enabled the angles of the transect lines to vary among sections, which minimized off-effort transit time between transects and allowed the majority of transect lines to run perpendicular to depth gradients. A similar approach was used by Thomas et al. (2007) and Doniol-Valcroze et al. (in press). Effort was allocated equally across the seven sections, which were combined and analyzed as a single stratum.
 
-Inbound and outbound shipping lanes – Swiftsure Bank to Vancouver  
+The Distance Sampling Survey Design (dssd) R package (Marshall and Rexstad, 2021) was used to generate transect lines with an equal-spaced complementary zig-zag design. The survey design met the standard distance sampling assumption that all portions of the study area have an equal probability of being included in the sampled transect lines by using random start points generated in dssd for each iteration of the survey design. Several options for line spacing between 13 and 20 km were explored by conducting 1,000 simulations of potential survey designs to compare the mean estimated coverage based on a truncation distance of 2 km, and the mean total survey time for each design. A distance of 18 km between lines was selected to achieve a balance between minimizing the time required to conduct each monthly survey and maintaining good coverage throughout the study area. The survey design was used to generate different iterations of transect lines for each monthly survey.
 
-6 km buffer on either side – provide a balance/trade-off between coverage of the Project area and a survey that could be completed in a reasonable amount of time each month 
+## DATA COLLECTION
 
-Because of limitations associated with the COVID-19 pandemic, transects were clipped to Canadian waters for surveys conducted in 2020 – Jan 2022. 
+Surveys were conducted on a monthly basis when possible, given weather, vessel, and crew availability. The 12.8 m research vessel R/V Manyberries traveled along pre-determined transects  at approximately 10 knots (18.5 km hr^-1^) when “on-effort” (i.e. actively surveying along transect lines). Data collected when vessel speed was less than 5 knots (9.2 km hr^-1^) or greater than 13 knots (24.1 km hr^-1^) were excluded from analyses. Observational effort was also halted when required for species confirmation or opportunistic photo-identification purposes. The order and direction that each line was surveyed varied between surveys, depending primarily on weather conditions throughout the study area.
 
- 
+Two observers were positioned on each side of the vessel’s bow (285 cm average height of eye from sea level) and used 7x50 Fujinon binoculars to conduct observational effort from 0-90 degrees on each side of the transect line, plus a 10 degree overlap at the centre.  The data recorder was positioned inside the wheelhouse and recorded data from the observers using Mysticetus software (Steckler and Donlan, 2018).  The observers and the data recorder rotated positions after every transect line, or after 45 minutes depending on transect length, to avoid eye strain and fatigue. Each observer worked independently to communicate sightings to the data collection station with in-ear Ultra High Frequency (UHF) radio headsets. All sightings included in the analyses were made by the same three observers.
 
-##Survey design: CM
+Mysticetus, connected to GPS, automatically collected vessel position and speed every 10 seconds, and also recorded the positional coordinates and timestamp upon effort or sightings data entry.  Effort conditions were reported by observers at the start of each transect line and as conditions changed. These included visibility, Beaufort sea state, glare intensity, and swell height (Table \@ref(tab:cov)). Sightings data included the bearing and reticle reading (or visually estimated radial distance if the sighting was very close to the vessel) to the animal(s), species, and group size (i.e. the number of animals spotted in a single detection). The reticle measurements built into the binoculars were used to determine the  distance to each sighting by counting down from the horizon or nearest land mass to the location of the sighting. Digital or manual protractors were used to measure the radial angles to the sighting and the glare extent.  
 
-Boat-based, multi-species cetacean surveys – use distance sampling methods 
+## DATA PROCESSING
 
-Standard distance sampling methods assume that all portions of the study area have an equal prob. of being included in the sample (i.e equal coverage probability).  
+Data were examined for accuracy and consistency using a custom-made R script adapted from Wright et al. (2021). Incomplete sighting records were corrected if possible or excluded from the analyses.
 
-Vessels travel along pre-determined systematic transect lines 
+Radial sighting distances were calculated based on the reticle readings, distance to the horizon, and the observational height of eye (Buckland et al., 2001). In some cases, reticles were measured from the nearest land mass at the time of observation, rather than from the horizon. In such cases, distance to the land mass was calculated using a custom R script and this was used in place of distance to the true horizon. The perpendicular distance of each sighting from the transect line was calculated from the radial sighting distance and the bearing to the sighting.
 
-Perpendicular to depth gradients 
+## DETECTION FUNCTIONS
 
-Designed to be analyzed as a single stratum with uniform coverage (*though can think about some post-stratification to compare to e.g. PRISMM estimates (interannual variation), Anna Hall surveys (trends? Changes?)) 
+Detection functions (DFs) were fit to perpendicular sighting distances of each species using the ds() function in the R “Distance” package (Miller, 2017). Because the survey platform, protocols, and the team of observers remained consistent throughout the study period, DFs were informed by data from all seasons. Species abundance was estimated separately for each season.
 
-Used “dssd” (Distance sampling survey design) package in R 
+Models were fit beginning with key-only models (half-normal, hazard-rate, and uniform keys), considered with and without adjustment terms. Environmental data (visibility, Beaufort sea state, swell, and glare), individual observer, and group size were considered as candidate covariates in the DFs. Covariates were added to the key-only models in a stepwise forward selection process. Comparisons were made between the key-only and each of the covariate models based on Akaike information criterion (AIC) values and goodness of fit using Cramer-von Mises tests and visual inspection of quantile-quantile (Q-Q) plots.
 
-Equal-spaced complementary zig zag design  
+To determine an appropriate right-truncation distance, the selected DF was examined for the perpendicular distance at which the probability of detection was approximately 0.15, as recommended in Buckland et al. (2001).
 
-survey design covers both US and Canadian waters 
+Some covariate levels were pooled to ensure sufficient numbers of sightings in each covariate category. Beaufort sea state was pooled into three categories: 0-1, 2, and 3+; and visibility was pooled into two categories: good/excellent or moderate/poor. Group sizes of four and above were pooled together; and swell and glare were each pooled into categories of present or absent. The selected categories were consistent among all species.
 
-Complementary zig-zag design to minimize off-effort travel time 
+## SEASONAL ABUNDANCE ESTIMATES
 
-Random start points; new iteration of transect lines generated for each survey 
+Months were grouped into seasons as: winter (January to March), spring (April to June), summer (July to September), and fall (October to December). Abundance ($\hat{N}$) was estimated seasonally, using a Horvitz-Thomson-like estimator:
 
-Line spacing: 18 km 
 
-1000 simulations  
+$$
+\hat{N} = \frac{A}{2L} \sum_{i=1}^n f(0|{z_i})*{s_i}
+$$
 
-Several line spacing options explored, coverage probability scores simulated for each using a truncation distance of 2 km * note that this should be discussed in results for porpoises as actual realized coverage was less than 2 km 
+where `A` is the total study area (in the current report, only the Canadian portion of the full study area), `L` is the total length of transects surveyed for that season, `n` is the number of sightings for the species in that season, $f(0|z_i)$ is the probability density function of detected distances at zero perpendicular distance for observation `i` with covariates $z_i$, and $s_i$ are the group sizes.
 
-Further minimized off-effort travel time 
+Given abundance, density ($\hat{D}$) was estimated per season as: 
 
-Mean number of transect lines: 40 (from simulations) 
+$$
+\hat{D} = \hat{N}/A
+$$
 
-Transect lines less than 1 km long were generally excluded from survey effort due to time constraints 
+95% log-normal confidence intervals were calculated for abundance and density estimates following methods described in Buckland et al. (2001). 
 
-Same spacing used in this area during PRISMM surveys and Raincoast surveys (Thomas et al. 2010). 
 
-Uniform coverage because of the multi-species nature of the surveys (i.e. different distributions/ densities, etc) 
-
-Subdivided into 7 substrata for survey design purposes, due to non-convex shape 
-
-Order/direction that transect lines were surveyed were determined based on weather and other research objectives and thus varied among surveys 
-
- 
-
-##Data collection: LS
-
-Surveys conducted monthly when possible  
-
-Limitations = weather, vessel availability 
-
-Research vessel Manyberries traveled at a speed of approximately 10 knots while on-effort 
-
-Time spent at speeds <5 knots/km/hr and >13(?) knots were excluded from analyses 
-
-Survey observations generally conducted as described in D-V et al. (in press), though without the third (“big eye”) observer, as the size of the vessel did not have an appropriate platform to mount the Fujinon 25x150 MTM heavy-duty military binoculars. (*but that’s ok because we were close to shore… not a lot of unknown species) 
-
-Group sizes/lumping/spltting? 
-
-Generally, … 
-
- 
-
- 
-
-##Analysis: EK
-
-Data processing – reference PRISMM document 
-
-Psd calculations with reticles 
-
-From land 
-
-Truncation selection 
-
-Detection functions for HW, porpoises (not kw’s yet) 
-
-Modelling – covariates to consider in models (AIC/gof) 
-
-Binning beauf and vis, 0.15 prob det 
-
- 

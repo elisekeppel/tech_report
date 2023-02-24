@@ -1,0 +1,4 @@
+Knitr plots in csasdown:
+- may not have "_" in code chunk name (can have "-")
+- only one plot per code chunk
+

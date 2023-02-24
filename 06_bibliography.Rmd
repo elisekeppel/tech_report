@@ -7,7 +7,7 @@ the following French/English translation. For a French document, set the followi
 
 \clearpage
 
-# References
+# REFERENCES {#sec:ref}
 
 <!-- The following sets the appropriate indentation for the references -->
 \noindent
@@ -15,3 +15,83 @@ the following French/English translation. For a French document, set the followi
 \setlength{\parindent}{-0.2in}
 \setlength{\leftskip}{0.2in}
 \setlength{\parskip}{8pt}
+
+Barlow, J., Calambokidis, J., Falcone, E.A., Baker, C.S., Burdin, A.M., Clapham, P.J., et al. 2011. Humpback whale abundance in the North Pacific estimated by photographic capture‐recapture with bias correction from simulation studies. Marine Mammal Science 27, 793-818.
+
+Best, B.D., Fox, C.H., Williams, R.W., Halpin, P.N. and Paquet, P.C. 2015. Updated marine mammal distribution and abundance estimates in British Columbia. Journal of Cetacean Research and Management 15, 9-26.
+
+Buckland, S.T., Anderson, D.R., Burnam, K.P., Laake, J.L., Borchers, D.L., and Thomas, L. 2001. Introduction to distance sampling: Estimating abundance of biological populations. Oxford University Press: Oxford, UK.
+
+Calambokidis, J., Falcone, E.A., Quinn, T.J., Burdin, A.M., Clapham, P.J., Ford, J.K.B., et al. 2008. SPLASH: Structure of Populations, Levels of Abundance and Status of Humpback Whales in the North Pacific. Report to U.S. Dept of Commerce, Seattle, Washington. 57 pp.
+
+Calambokidis, J., Fahlbusch, J.A., Szesciorka, A.R., Southall, B.L., Cade, D.E., Friedlaender, A.S., and Goldbogen, J.A. 2019. Differential vulnerability to ship strikes between day and night for blue, fin, and humpback whales based on dive and movement data from medium duration archival tags. Frontiers in Marine Science 6, 543.
+
+Center for Whale Research. 2022. https://www.whaleresearch.com/orcasurvey. Accessed March 30, 2022.
+
+COSEWIC. 2017. COSEWIC assessment and status report on the Grey Whale *Eschrichtius robustus*, Northern Pacific Migratory population, Pacific Coast Feeding Group population and the Western Pacific population, in Canada. Committee on the Status of Endangered Wildlife in Canada. Ottawa. xxi + 74 pp. Species at risk public registry
+
+COSEWIC. 2019. COSEWIC assessment and status report on the Fin Whale, *Balaenoptera physalus*, Atlantic population and Pacific population, in Canada. Committee on the Status of Endangered Wildlife in Canada. Ottawa. xv + 72 pp. (https://www.canada.ca/en/environment-climatechange/services/species-risk-public-registry.html).
+
+DFO. 2021. Identification of areas for mitigation of vessel-related threats to survival and recovery for Southern Resident Killer Whales. DFO Can. Sci. Advis. Sec. Sci. Advis. Rep. 2021/025. 
+
+Doniol-Valcroze, T.,  Nichol, L., Wright, B., Stredulinsky, E., Spaven, L., and Abernethy, R. In press. Abundance estimates of cetaceans from the 2018 Pacific Region International Survey of Marine Megafauna. DFO Can. Sci. Advis. Sec. Res. Doc.
+
+Fisheries and Oceans Canada. 2007. Recovery Strategy for the Transient Killer Whale (*Orcinus orca*) in Canada. Species at Risk Act Recovery Strategy Series. Fisheries and Oceans Canada, Vancouver, vi + 46 pp.
+
+Fisheries and Oceans Canada. 2009. Management Plan for the Pacific Harbour Porpoise (*Phocoena phocoena*) in Canada. Species at Risk Act Management Plan Series. Fisheries and Oceans Canada, Ottawa. v + 49 pp.
+
+Fisheries and Oceans Canada. 2011a. Management Plan for the Eastern Pacific Grey Whale (*Eschrichtius robustus*) in Canada [Final]. Species at Risk Act Management Plan Series. Fisheries and Oceans Canada, Ottawa. v + 60pp.
+
+Fisheries and Oceans Canada. 2011b. Recovery Strategy for the North Pacific Right Whale (Eubalaena japonica) in Pacific Canadian Waters [Final]. Species at Risk Act Recovery Strategy Series. Fisheries and Oceans Canada, Ottawa. vii + 51 pp.
+
+Fisheries and Oceans Canada. 2013. Recovery Strategy for the North Pacific Humpback Whale (*Megaptera novaeangliae*) in Canada. Species at Risk Act Recovery Strategy Series. Fisheries and Oceans Canada, Ottawa. x + 67 pp.
+
+Fisheries and Oceans Canada. 2018a. Recovery Strategy for the Northern and Southern Resident Killer Whales (*Orcinus orca*) in Canada. Species at Risk Act Recovery Strategy Series, Fisheries & Oceans Canada, Ottawa, x + 84 pp.
+
+Fisheries and Oceans Canada. 2018b. Recovery Strategy for the Offshore Killer Whale (*Orcinus orca*) in Canada. Species at Risk Act Recovery Strategy Series. Fisheries and Oceans Canada, Ottawa. vi + 52 pp.
+
+Ford, J.K.B., Pilkington, J.F., Reira, A., Otsuki, M., Gisborne, B., Abernethy, R.M., Stredulinsky, E.H., Towers, J.R., and Ellis, G.M. 2017. Habitats of Special Importance to Resident Killer Whales (*Orcinus orca*) off the West Coast of Canada. DFO Can. Sci. Advis. Sec. Res. Doc. 2017/035. viii + 57 pp.
+
+Ford, J.K.B, Stredulinsky, E.H., Towers, J.R., and Ellis, G.M. 2013. Information in Support of the Identification of Critical Habitat for Transient Killer Whales (*Orcinus orca*) off the West Coast of Canada. DFO Can. Sci. Advis. Sec. Res. Doc. 2012/155. iv + 46 pp.
+
+Gavrilchuk, K. and Doniol-Valcroze, T. 2021. Recovery Potential Assessment for the Grey Whale (*Eschrichtius robustus*): Pacific Coast Feeding Group and Western Pacific Population in Canadian Waters. DFO Can. Sci. Advis. Sec. Res. Doc. 2021/020. iv + 52 pp,
+
+Gregr, E.J., Calambokidis, J., Convey, L., Ford, J.K.B., Perry, R.I., Spaven, L., Zacharias, M. 2006. Recovery Strategy for Blue, Fin, and Sei Whales (*Balaenoptera musculus*, *B. physalus*, *and B. borealis*) in Pacific Canadian Waters. In Species at Risk Act Recovery Strategy Series. Vancouver: Fisheries and Oceans Canada. vii + 53 pp.
+
+Hall, A.M. 2004. Seasonal abundance, distribution and prey species of Harbour Porpoise (*Phocoena phocoena*) in southern Vancouver Island waters. MSc Thesis, University of British Columbia, Vancouver, Canada. 100 pp. 
+
+Jefferson, T.A., Smultea, M.A., Courbis, S.S., and Campbell, G.S. 2016. Harbour porpoise (*Phocoena phocoena*) recovery in the inland waters of Washington: estimates of density and abundance from aerial surveys, 2013-2015. Canadian Journal of Zoology 94, 505-515.
+
+Keple, A.R. 2002. Seasonal abundance and distribution of marine mammals in the southern Strait of Georgia, British Columbia. MSc Thesis, University of British Columbia, Vancouver, Canada. x + 84 pp.
+
+Marshall, L. and Rexstad, E. 2021. Distance sampling survey design. R package version 0.3.1. https://cran.r-project.org/package=dssd 
+
+Merilees, B. 1985. Humpbacks in our Strait. Waters, Journal of the Vancouver Aquarium 8, 7-24.
+
+Miller, D.L. 2017. Distance: Distance sampling detection function and abundance estimation. R package version 0.9.7. https://CRAN.R-project.org/package=Distance
+
+National Energy Board. 2019. Reconsideration Report - Trans Mountain Pipeline ULC - MH-052-2018. 680 pp.
+
+Nichol, L.M., Hall, A.M., Ellis, G.M., Stredulinsky, E., Boogaards, M., and Ford, J.K.B. 2013. Dietary overlap and niche partitioning of sympatric harbour porpoises and Dall’s porpoises in the Salish Sea. Progress in Oceanography 115, 202-210.
+
+Nichol, L.M., Wright, B.M., O’Hara, P., and Ford, J.K.B. 2017. Assessing the risk of lethal ship strikes to humpback (*Megaptera novaeangliae*) and fin (*Balaenoptera physalus*) whales off the west coast of Vancouver Island, Canada. DFO Can. Sci. Advis. Sec. Res. Doc. 2017/007. vii + 33 pp. 
+
+Olesiuk, P.F. 2010. An assessment of population trends and abundance of harbour seals (*Phoca vitulina*) in British Columbia. DFO Can. Sci. Advis. Sec. Res. Doc. 2009/105. vi + 157 pp.
+
+Olesiuk, P.F. 2018. Recent trends in abundance of steller sea lions (*Eumetopias jubatus*) in British Columbia. DFO Can. Sci. Advis. Sec. Res. Doc. 2018/006. v + 67 pp.
+
+Steckler, D. and Donlan, P. 2018. Mysticetus LLC. Version 2.0. http://mysticetus.com
+
+Thomas, L., Williams, R., and Sandilands, D. 2007. Designing line transect surveys for complex survey regions. Journal of Cetacean Research and Management 9, 1–13.
+
+Towers, J.R., Malleson, M., McMillan, C.J., Cogan, J., Berta, S., and Birdsall, C. 2018. Occurrence of fin whales (*Balaenoptera physalus*) between Vancouver Island and continental North America. Northwestern Naturalist 99, 49-57.
+
+Towers, J.R, McMillan, C.J., Malleson, M., Hildering, J., Ford, J.K.B., and Ellis, G.M. 2013. Seasonal movements and ecological markers as evidence for migration of common minke whales photo-identified in the eastern North Pacific. J. Cetacean Res. Manage. 13, 221-229.
+
+Towers, J.R., Sutton, G.J., Shaw, T.J.H., Malleson, M., Matkin, D., Gisborne, B., et al. 2019. Photo-identification Catalogue, Population Status, and Distribution of Bigg’s Killer Whales known from Coastal Waters of British Columbia, Canada. Can. Tech. Rep. Fish. Aquat. Sci. 3311, vi + 299 p.
+
+Williams, R., and Thomas, L. 2007. Distribution and abundance of marine mammals in the coastal waters of British Columbia , Canada. J. Cetacean Res. Manage. 9, 15-28.
+
+Wiliamson, L.D., Brookes, K.L. , Scott, B.E., Graham, I.M., and Thompson, P.M. 2017. Diurnal variation in harbour porpoise detection — potential implications for management. Marine Ecology Progress Series 570, 223-232.
+
+Wright, B.M., Nichol, L.M., and Doniol-Valcroze, T. 2021. Spatial density models of cetaceans in the Canadian Pacific estimated from 2018 ship-based surveys. DFO Can. Sci. Advis. Sec. Res. Doc. 2021/049. viii + 46 pp.

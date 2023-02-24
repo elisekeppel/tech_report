@@ -1,0 +1,23 @@
+EK outline notes:
+
+METHODS:
+
+Data management:
+  - check for errors or missing data
+  - calculate radial distance for reticle sgts using reticles, distance to horizon and hoe
+  - land-based reticles...
+  - calculate perp distance using radial distance (or estimated distance) and bearing
+  - combine sighting, effort and gps data together for analysis
+  
+ANALYSIS:
+
+Detection functions:
+- data were analyzed using the R package "Distance" 
+- try key function models for each species and examine histogram of detection probability against perpendicular sighting distance for appropriate truncation distance
+- add in covariates (ie. environmental conditions, observer) and check for reduced delta AIC or improved model fit
+- Continue in stepwise fashion, retaining covariates which improve fit, removing others from further analysis.
+
+Abundance & Density:
+- add study area into models to estimate abundance and density
+
+

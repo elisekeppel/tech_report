@@ -44,9 +44,9 @@ This section's header line looks like this:
 
 And can be referenced like this: `\@ref(sec:introduction)` which renders to this: Section \@ref(sec:introduction).
 
-A reference to the equation above looks like this: `\@ref(eq:test)` and renders to this: Figure \@ref(eq:test). The labels for any type of reference (except for bibliography citations) are shown in Table \@ref(tab:ref-tab).
+A reference to the equation above looks like this: `\@ref(eq:test)` and renders to this: Figure \@ref(eq:test). The labels for any type of reference (except for bibliography citations) are shown in Table \@ref(tab:ref-tab2).
 
-```{r ref-tab}
+```{r ref-tab2}
 refs_tab <- dplyr::tribble(
      ~`Reference type`,                    ~`Rmarkdown code`,
              "Section",        "`\\@ref(sec:section-label)`",
@@ -58,6 +58,7 @@ refs_tab <- dplyr::tribble(
 
 csasdown::csas_table(refs_tab,
   align = c("r", "r"),
+  longtable = F,
   caption = ifelse(french,
                    "French goes here",
                    "Reference types and their Rmarkdown reference codes."))

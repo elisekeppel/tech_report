@@ -1,666 +1,173 @@
-# Results `r Sys.Date()`
+# RESULTS {#sec:results}
 
 ```{r set, include=FALSE, message = FALSE, warning=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, cache = F)
+knitr::knit_hooks$set(inline=
+                        function(x){
+                          if(!is.numeric(x)){x
+                          }else{prettyNum(round(x,2),
+                                         big.mark=",")}})
+# knitr::knit_hooks$set(inline=
+#                         function(x){
+#                           if(!is.numeric(x)){x
+#                           }else{ifelse(x<10,as.character(as.english(x)),x)}})
 ```
 
-## Line-transect surveys 
-
-```{r load_data}
-{iterations <- data.frame(cbind(
-    year = c(rep(2020,3),rep(2021, 11),rep(2022,2)),
-    month_abb =c("Sep", "Oct", "Nov", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Oct", "Nov", "Dec","Jan","Feb"),
-    iteration = c(1,2,3,6,7,8,9,10,11,12,13,14,15,16,18,19)))
-  
-n <- nrow(iterations)
-year <- iterations$year[n]
-month_abb <- iterations$month_abb[n]
-month <- match(month_abb, month.abb)
-survey_title <- paste(cemore::first_up(month_abb), year) 
-surveyid = paste0("cemore_", year, tolower(month_abb))
-
-iteration <- iterations$iteration[which(iterations$year == year & iterations$month_abb == month_abb)]
+```{r load-data}
+{iterations <- readRDS("data/iterations.rds")
+month <- 2
+year <- 2022
+  month_abb <- month.abb[2]
+  survey_title <- paste(cemore::first_up(as.character(month_abb)), year)
+  surveyid = paste0("cemore_", year, tolower(month_abb))
 }
-
 
 # Load previously saved data
-all_effort <- load_effort(year, as.numeric(month), single_survey = F, vessel = "MB")
-all_effort_lines <- readRDS(paste0("C:/users/keppele/documents/github/cemore/tech_report/output/all_effort_lines_to ", survey_title, ".rds")) %>% 
+all_effort <- load_effort(year, as.numeric(month), single_survey = F, vessel = "MB") %>% filter(date<"2022-03-01")
+all_effort_lines <- readRDS(paste0("output/all_effort_lines_to ", survey_title, ".rds")) %>%
   mutate(length_km = as.numeric(st_length(geometry))/1000)
-all_ap_sf <- readRDS(paste0("C:/users/keppele/documents/github/cemore/tech_report/output/all_effort_sgt_to ", survey_title, ".rds")) %>%
-  rename(Observer=SightedBy, Visibility=port_visib,Group_Size=BestNumber) %>% 
-  dplyr::mutate(distance = PSD_nm * 1.852,
-                Beaufort=as.numeric(as.character(beauf)),
-                 Glare = ifelse(!glare == "None", yes = "y",no = "n"),
-    Count = factor(
-    dplyr::case_when(
-      Group_Size==1 ~ "1",
-      Group_Size==2 ~ "2",
-      Group_Size==3 ~ "3",
-      Group_Size>3 ~ "4+"
-      ), levels=  c("1","2","3","4+")
-  )
-) %>%  
-  filter(!is.na(PSD_nm), !Observer=="SHrushowy")
 
-# filter for species of interest
-# all_ap_sf %<>% filter(Species %like% "Humpback")
-# total number of survey days and total count cetacean sightings; manually check any NA values
+all_ap_sf <- readRDS(paste0("output/all_effort_sgt_to ", survey_title, ".rds")) %>%
+  # rename(Observer=SightedBy) %>%
+  dplyr::mutate(
+                Clumped_Group_Size = factor(
+                  dplyr::case_when(
+                    Group_Size==1 ~ "1",
+                    Group_Size==2 ~ "2",
+                    Group_Size==3 ~ "3",
+                    Group_Size>3 ~ "4+"
+                  ), levels=  c("1","2","3","4+")),
+                swell=factor(case_when(
+                  swell == "Big >2" ~ "Mod-Big",
+                  swell == "Moderate 1-2 m" ~ "Mod-Big",
+                  swell == "Low <1 m" ~ "Low",
+                  swell == "No swell" ~ "None"),
+                  levels= c("None", "Low", "Mod-Big")),
+                Clumped_Swell=factor(case_when(
+                  swell == "Mod-Big" ~ "Swell",
+                  swell == "Low" ~ "Swell",
+                  swell == "None" ~ "No Swell"),
+                  levels= c("No Swell","Swell")),
+                Clumped_Beaufort = case_when(
+                  Beaufort <2 ~ "0-1",
+                  Beaufort == 2 ~ "2",
+                  Beaufort > 2 ~ "3+"),
+                Clumped_Vis = case_when(
+                  Visibility == "G&E"~ "G/E",
+                  !Visibility == "G&E"~ "M/P"),
+                Observer = case_when(
+                  Observer == "CMcMillan" ~"a",
+                  Observer == "EKeppel"~"b",
+                  Observer == "LSpaven"~ "c")) %>% 
+  mutate(
+    # Region.Label= Survey,
+    Region.Label= season,
+    Sample.Label=TransectID,
+         object=Sgt_ID)
+all_ap_sf$Species <-  all_ap_sf$Species %>% 
+  as.character() %>% 
+  tolower()
+all_ap_sf$Species <- gsub(pattern="dall's",replacement="Dall's",all_ap_sf$Species)
+all_ap_sf$Species <- gsub(pattern="bigg's",replacement="Bigg's",all_ap_sf$Species)
+# unique(all_ap_sf$Species)
 
+all_ap_sf$Species = factor(all_ap_sf$Species, levels = 
+                             c("humpback whale",
+                               "harbour porpoise",
+                               "Dall's porpoise" ,
+                               "unknown porpoise",
+                               "killer whale - northern resident",
+                               "killer whale - southern resident",
+                               "killer whale - Bigg's",
+                               "killer whale - unknown ecotype",
+                               "grey whale",
+                               "fin whale",
+                               "minke whale"
+                             ))
+B <- 2937.946 # survey area (Can only) %>% units::set_units(km^2)#km ^2
 
-```
-
-Total distance surveyed = `r round(sum(st_length(all_effort_lines))/1000) %>% as.numeric()` km
-
-```{r load spatial files, results = FALSE}
-# ----------------- LOAD SPATIAL FILES --------------------------------
-# bc coast for plotting
- x <- "C:/Users/KeppelE/Documents/CeMoRe/Analysis/cemore_analysis/shapefiles"
-if(!exists("coast")){
-coast <- sf::st_read(dsn = x, layer = "BC_coast_UTM9") %>% st_transform(3156)
-}
-
-if(!exists("locations")){
-  locations <- sf::st_read(dsn = x, layer = "locations")
-  locations[which(locations$TextString=="Boundary Pass"),]$YOffset<-0.02
-  locations[which(locations$TextString=="Haro Strait"),]$YOffset<--0.15
-  locations[which(locations$TextString=="Haro Strait"),]$XOffset<-0.01
-  locations[which(locations$TextString=="Can"),]$YOffset <- 0.02
-  locations[which(locations$TextString=="Washington State"),]$Angle <--1.5
-    locations[which(locations$TextString=="Vancouver Island"),]$Angle
-}
-if(!exists("canada_shp")){
-canada_shp <- st_read(dsn = x, "CanadianEEZ") %>% st_transform(crs=3156)
-}
-if(!exists("tss")){
-tss <- st_read(dsn = x, "SBC_TSS_SIMPLE") %>% st_transform(crs=3156)
-}
-
-if(!exists("survey_area")){
-survey_area <- sf::st_read(dsn = x, layer = "Full_study_area_UTM9N") %>% st_union()
-survey_can <- st_intersection(survey_area,canada_shp)
-canada_shp %<>% st_cast("MULTILINESTRING")
-}
-
-# if(!exists("d")){
-# d <- st_read(dsn = x, layer = "less_than_5m") %>% st_transform(crs = 4326)
-# }
-coord <- ggplot2::coord_sf(xlim = c(-125.5, -122.9), ylim = c(48.1, 49.44), crs = sf::st_crs(4326)) 
-
-# create bathymetric layer
-bathy <- getNOAA.bathy(-125.7, -122.5,48, 49.5,res=1, keep=TRUE) %>%
-  fortify(bathy)
-bathy$z[which(bathy$z >= 0)] <- 0
-col <- rev(RColorBrewer::brewer.pal(9L, "Blues")[4:7])
-col_ramp <- colorRampPalette(col)
-
-# make bathy legend
-b_leg <- ggplot() +
-  geom_raster(aes(x=x,y=y,fill = z), data = bathy) + 
-  labs(fill = "Depth (m)") +
-  scale_fill_gradientn(colours = col_ramp(20)) +
-  theme(legend.position = "bottom") +
-  guides(fill = guide_colorbar(title.position = "top"))
-leg1 <- cowplot::get_legend(b_leg)
-
-coast_file <- coast
-base_map <- ggplot() +
-  geom_raster(aes(x=x,y=y,fill = z), data = bathy) +  #labs(fill = "Depth (m)") +
-  scale_fill_gradientn(colours = col_ramp(20), guide = "none") +
-  ggnewscale::new_scale("fill") +
-  geom_sf(data = coast_file, stroke = 0.05, fill = "light yellow", colour = "grey 60") +
-  guides(alpha= "none") +
-  ylab("")+xlab("") 
-  # theme(axis.text.x = element_text(angle = 90))
-```
-
-
-### Survey Area
-```{r survey_area}
-ggplot() +
-  geom_raster(aes(x=x,y=y,fill = z), data = bathy) +  #labs(fill = "Depth (m)") +
-  scale_fill_gradientn(colours = col_ramp(20), guide = "none") +
-  ggnewscale::new_scale("fill") +
-
-  geom_sf(data = survey_area, aes(colour = "Full Survey Area"),
-          fill=NA,alpha=0.3)+
-  geom_sf(data = tss, aes(fill = "TSS"), colour=RColorBrewer::brewer.pal(9,"Oranges")[4]) +
-
-   geom_sf_pattern(data = survey_can, fill = NA, aes(pattern_fill = "Can Survey Area"),
-                  pattern_spacing = 0.02, pattern = "stripe", pattern_size = 0.05)+
-  coord_fixed(ratio = 1/2)+
-  geom_sf(data = canada_shp, aes(linetype = "Can-US border"), fill=NA,colour="red") +
-
-  scale_colour_manual(values = 'grey40') +
-  scale_fill_manual(values = RColorBrewer::brewer.pal(9,"Oranges")[4]) +
-  scale_pattern_fill_manual(values = 'grey60') +
-  scale_linetype_manual(values = c(5)) +
-  labs(fill='',colour = '',pattern_fill='',linetype='')+
-  guides(fill=guide_legend(order=1),
-    colour = guide_legend(order =2),
-         pattern_fill =guide_legend(order=3),
-         linetype = guide_legend(title = NULL, order =4)) +
-  
-  theme(
-    legend.background = element_rect(fill = "transparent"),
-    # legend.box.background = element_rect(fill = "transparent", colour = NA),
-    legend.key = element_rect(fill = "transparent"),
-    legend.spacing = unit(c(-0.6,-1,-0.5), "lines")
-    )+
-  geom_sf(data = coast_file, stroke = 0.05, fill = "light yellow", colour = "grey 60") +
-  
- 
-geom_sf_text(data = locations, aes(label = TextString, 
-                                     angle = Angle),
-               nudge_x = locations$XOffset,
-               nudge_y = locations$YOffset, 
-               size = 3,#locations$FontSize*0.3, 
-               colour="black")+
-  annotation_custom(leg1, xmin=-122.5, xmax=-122, ymin=48, ymax=48) +
-  coord+
-  
-  ylab("")+xlab("")
-```
-
-```{r plot_example_survey_design}
-# base_map +
-#   geom_sf(data=survey_area)+
-#   geom_sf(data=oct_lines %>% filter(year=2020))+
-#   coord
-```
-
-\newpage
-
-### Seasonal tracklines to date - Jan-Mar, Apr-Jun-, Jul-Sep, Oct-Dec 
-
-```{r plot_seasonal_tracklines, echo=F,fig.width=12,results='hide'}
-par(mar=c(0,0,0,0))
-p <- suppressMessages(plot_survey(Save = F,
-                 border = T,
-  single_survey <- F,
-  incidentals <-  F,
-  hydrophone <- F,
-  sightings_only <- F,
-  N=T,
-  km=T,
-  depth=F))
-suppressMessages(ggsave("seasonal_track.png",p))
-plot_crop("seasonal_track.png", quiet=T)
-```
-
-```{r seasonal_trackline}
-knitr::include_graphics("seasonal_track.png")
-```
-
-```{r plot_tracklines,fig.width=10,fig.height=11}
-# all_effort_lines_sum <- all_effort_lines %>% 
-#   mutate(length_km = as.numeric(st_length(geometry))/1000) %>% 
-#   as.data.frame() %>% mutate(Bf = factor(Bf, levels = c(0,1,2,3,4,5,6,7)))
-
-
-
-
+effort <- all_effort_lines %>% 
+  data.frame() %>% 
+  # unique segment ID's and length for each
+  transmute(Sample.Label=TransectID,
+            # Region.Label = SurveyID,
+            Region.Label = season,
+            Effort = st_length(geometry),
+            Area=B) %>% 
+  group_by(Region.Label,Area,Sample.Label) %>% 
+  summarise(Effort=as.numeric(sum(Effort))/1000) %>% ungroup()
 
 ```
 
-```{r summary_tables}
-# x <- all_effort_lines %>% 
-#   mutate(length = as.numeric(st_length(geometry))) %>% 
-#   as.data.frame() %>% filter(!is.na(length)) %>% 
-#   mutate(Month = month_abb, Year = year,Season=season) %>% dplyr::select(-c(month,year,season)) 
-  # transmute(Year = year, Season = season, length = as.numeric(length)) %>%
- 
-# x %>%  dplyr::group_by(Year, Month, Season) %>%
-#   dplyr::summarise("Total survey distance (km)" = round(sum(length/1000))) %>%
-#   csasdown::csas_table()
-# 
-# x %>% dplyr::group_by(Season) %>%
-#   dplyr::summarise("Total survey distance (km)" = round(sum(length/1000)),
-#                    "# Surveys" = n_distinct(SurveyID)) %>% 
-#   csasdown::csas_table()
-```
-
-### Survey Sightings
-
-All data presented are on-effort survey sightings unless otherwise noted.
-
-```{r survey_sightings_sum}
-all_ap_sf %>%  dplyr::group_by(Species) %>%
-  dplyr::summarise( N = n(),
-                    "Number of Individuals" = sum(Group_Size),
-                    "Mean Group Size +/- Std.Dev." = paste0(round(mean(Group_Size), 1),
-                                          " (+/- ", round(sd(Group_Size), 1),")"),
-                    # "Std. Dev." = round(sd(Group_Size), 1),
-                    # "Std.err" = round(sd/sqrt(N),1),
-                    "Min Group Size" = round(min(Group_Size),1),
-                    "Max Group Size" = round(max(Group_Size),1)
-                    ) %>%
-                    as.data.frame() %>%
-  dplyr::rename("Number of Sightings" = N) %>% 
-  dplyr::select(-geometry) %>% 
-  csasdown::csas_table(align=rep('r', 5))
-```
-
-### Humpback Whale Monthly Sightings
-```{r hw_monthly, echo=FALSE,fig.width=12,caption="All on-effort Dalls porpoise sightings. Monthly data are pooled over years."}
-plot_sp_monthly <- function(species=sp,
-                            sightings_data=all_ap_sf,
-                            effort_data=all_effort_lines){
-ap_sf <- sightings_data %>% filter(Species %like% species)
-ap_sf$Species %<>% droplevels()
-# to order legend symbols consistently
-sp <- unique(c(levels(ap_sf$Species)))
-
-# create text dataframe for labels
-tx <- effort_data %>% 
-  as.data.frame() %>% 
-  dplyr::group_by(month_abb) %>%
-  dplyr::summarise(dist = round(sum(length_km),0),
-                   lab=list(unique(year))) %>% 
-  mutate(lab=Map(
-    function(x,y) paste(x, paste(y,collapse=", "),sep = " "),
-    month_abb,lab) %>%
-           unlist()) %>% 
-  arrange(month_abb) %>% 
-  mutate(lab= factor(lab,levels=c(unique(.$lab),"Dec - 0 years")))%>% 
-    as.data.frame()
-
-# tx <- ap_sf %>% as.data.frame() %>%  dplyr::group_by(month_abb) %>%
-#   dplyr::summarise(N = n()) %>% join(tx,type="right")
-
-# add labels to spatial data frames for facetting
-tx[nrow(tx) + 1,] <- c("Dec",0, "Dec - 0 years")
-effort_lines <- sp::merge(effort_data, tx, by="month_abb")
-ap_sf <- sp::merge(ap_sf, tx, by="month_abb")
-
-p <- base_map +
-  geom_sf(data = effort_lines, stroke = 0.25,colour="grey50")+
-  geom_sf(data = ap_sf, stroke = 0.01, alpha = 0.5, aes(size = Count)) +#
-  scale_size_manual(values = c(1.5,2,2.5,3), name = "Number of Individuals") +
-  coord +
-  # ggtitle(paste0("Monthly ", sp, " sightings")) +
-  theme(legend.position = "bottom",
-        legend.margin = margin(0),
-        legend.key.size = unit(0.1,"cm")) +
-  theme(axis.text.x=element_text(angle=90),
-        plot.margin = unit(c(0,-1,0,-1), "cm"))+
-  
-  geom_text(data = tx, aes(x = -124.3, y = 48.8, label = paste0(dist, " km")), size = 2) +
-  # geom_text(data = tx, aes(x = (-124.4), y = 48.8, label = paste0(N, " sightings")), size = 2) +
-
-  facet_wrap(~lab, drop = F, ncol=3)
-fig <- ggdraw(p) +
-  draw_label("Winter", x = 0.26, y = 0.87, hjust = 0, vjust = 0,size=10, angle=90)+
-  draw_label("Spring", x = 0.26, y = 0.65, hjust = 0, vjust = 0,size=10, angle=90)+
-  draw_label("Summer", x = 0.26, y = 0.45, hjust = 0, vjust = 0,size=10, angle=90)+
-  draw_label("Fall", x   = 0.26, y = 0.24, hjust = 0, vjust = 0,size=10, angle=90)
-
-ggsave(paste0(sp,"_monthly_stg_map.png"),plot=fig)
-plot_crop(paste0(sp,"_monthly_stg_map.png"))
-knitr::include_graphics(paste0(sp,"_monthly_stg_map.png"))
-}
-
-sp <- "Humpback"
-plot_sp_monthly()
-```
-
-### Harbour Porpoise Monthly Sightings
-```{r hp_monthly, echo=FALSE,fig.width=12,caption="All on-effort Dalls porpoise sightings. Monthly data are pooled over years."}
-sp <- "Harbour Porpoise"
-plot_sp_monthly()
-```
-
-
-### Dalls Porpoise Monthly Sightings
-```{r dp_monthly, echo=FALSE,fig.width=12,caption="All on-effort Dalls porpoise sightings. Monthly data are pooled over years."}
-sp <- "Dalls Porpoise"
-plot_sp_monthly()
-```
-
-\newpage
-### Non-Target Species  
-Note: This includes non-survey sightings (ie. transiting)
-
-<!-- Note: I checked for the grey whale sighting June 13. It was first spotted at 12:02 before going on effort for the day (incidental). We began effort at 12:23, then the whale was respotted at 12:38 as an incidental by an off effort observer (again incidental). We went off effort to pursue the whale for photo's at 12:39. -->
-
-```{r sp_distrib, echo=FALSE,fig.width=9}
-
-x <- get_all_raw_sgt()%>% 
-  filter(!Species %like% c("Humpback") & !Species %like% "Porpoise")%>%
-  tidyr::separate(GPS.Pos, into = c("lat", "lon"), sep = "N") %>%
-  dplyr::mutate(lon = substr(lon, 2, nchar(lon)-3)) %>%
-  dplyr::mutate(lat = substr(lat, 1, nchar(lat)-2)) %>%
-  tidyr::separate(lon, into = c("lon.deg", "lon.min"), sep = " ") %>%
-  tidyr::separate(lat, into = c("lat.deg", "lat.min"), sep = " ") %>%
-  mutate(lon = -(as.numeric(lon.deg) + as.numeric(lon.min)/60),
-         lat = as.numeric(lat.deg) + as.numeric(lat.min)/60,
-         Count = Best.Cnt,
-         month=month(date)) %>%
-  st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
-  dplyr::select(month,"Species","Count", geometry) %>%
-  dplyr::filter(!month==1 | !Species=="Killer Whale - Transient")
-x$Species %<>% droplevels()
-
-# to order legend symbols consistently
-sp <- unique(c(levels(x$Species)))
-pal <- brewer.pal(9, "Set1")[c(1:9)] 
- 
-cols <- c('Humpback Whale' = pal[1],
-            'Harbour Porpoise' = pal[3],
-            'Dalls Porpoise' = pal[4],
-            'Unknown Porpoise' = pal[9],
-            'Killer Whale - Northern Resident' = "black",
-            'Killer Whale - Southern Resident' = "black",
-            'Killer Whale - Transient' = "black",
-            'Killer Whale - Unknown ecotype' = "black",
-            'Fin Whale' = pal[5],
-            'Grey Whale' = pal[8],
-            'Minke Whale' = pal[7])
-
-  shape <- c('Humpback Whale' = 21,
-             'Harbour Porpoise' = 21,
-             'Dalls Porpoise' = 21,
-             'Unknown Porpoise' = 21,
-             'Killer Whale - Northern Resident' = 24,
-             'Killer Whale - Southern Resident' = 25,
-             'Killer Whale - Transient' = 21,
-             'Killer Whale - Unknown ecotype' = 22,
-             "Fin Whale" = 21,
-             "Grey Whale" = 21,
-             "Minke Whale" = 21)
- 
-base_map +
-  geom_sf(data = x, stroke = 0, size=3,alpha = 0.8, aes(fill = Species, shape = Species)) +#, size = Count
-  # scale_size_manual(values = c(1.5,2,2.5,3), name = "Group Size") +
-  scale_fill_manual(values = cols, name = "Sightings", breaks = sp)   +
-  scale_shape_manual(values = shape, name = "Sightings", breaks = sp) +
-  
-  guides(alpha= "none") +
-  guides(shape = guide_legend(override.aes = list(size=2), order = 1)) +
-  guides(fill = guide_legend(order = 1)) +
-  # guides(size = guide_legend(order = 2)) +
-  coord
-
-# spp + ggtitle(paste0("CeMoRe Survey Non-Target Species Sightings")) 
-```
-
-### Covariates
-
-#### Survey distances for influential covariates for each species
-
-```{r hw_cov_violin}
-hw <- all_ap_sf %>% dplyr::filter(Species=="Humpback Whale",distance<2) %>% dplyr::mutate(Observer=case_when(
-  Observer=="CMcMillan" ~ "a",
-  Observer=="LSpaven" ~ "b",
-  Observer=="EKeppel" ~ "c"),
-  Clumped_Beaufort = case_when(
-  Beaufort < 2 ~"0-1",
-  Beaufort ==2 ~ "2",
-  Beaufort >2 ~ "3+")
-)
-
-# hw_sum <- hw %>% data.frame() %>% count(Observer)
-
-# ggplot(data = hw, aes(x=Observer, y=distance)) +
-#   geom_violin()+
-#   # stat_summary(fun=mean, geom="pointrange", shape=23, size=2)
-#   geom_boxplot(width=0.1)+
-#   geom_text(data=hw_sum,
-#             aes(Observer,max(hw$distance)+(0.05*max(hw$distance)),label=n,size=0.1),size=3,vjust = -0.5)+
-#   # stat_summary(fun.data=mean_sdl, geom="pointrange")+
-#   labs(title="Humpback Whale sighting distances for unique observers.")+
-#   ylab("Perpendicular sighting distance (km)")+
-#   xlab("Unique observer")
-
-hw_sum <- hw %>% data.frame() %>% count(Clumped_Beaufort)
-
-ggplot(data = hw, aes(x=Clumped_Beaufort, y=distance)) +
-  geom_violin()+
-  # stat_summary(fun=mean, geom="pointrange", shape=23, size=2)
-  geom_boxplot(width=0.1)+
-  geom_text(data=hw_sum,
-            aes(Clumped_Beaufort,max(hw$distance)+(0.05*max(hw$distance)),label=n,size=0.1),size=3,vjust = -0.5)+
-  # stat_summary(fun.data=mean_sdl, geom="pointrange")+
-  labs(title="Humpback Whale sighting distances by Beaufort level.")+
-  ylab("Perpendicular sighting distance (km)")+
-  xlab("Beaufort (clumped into groups, 0-1, 2, 3+)")
-```
-
-```{r hp_cov_violin}
-hp <- all_ap_sf %>% filter(Species=="Harbour Porpoise",distance<0.7) %>% 
-  mutate(Clumped_Beaufort = as.factor(case_when(
-  Beaufort < 2 ~"0-1",
-  Beaufort ==2 ~ "2",
-  Beaufort >2 ~ "3+")
-),
-Observer = case_when(
-  Observer == "CMcMillan" ~"a",
-  Observer == "EKeppel"~"b",
-  Observer == "LSpaven"~ "c")
-)
-hp_sum <- hp %>% data.frame() %>% count(Clumped_Beaufort)
-
-ggplot(data = hp, aes(Clumped_Beaufort, distance)) +
-  geom_violin() + 
-  geom_boxplot(width=0.1)+
-  geom_text(data=hp_sum, 
-            aes(Clumped_Beaufort,max(hp$distance)+(0.05*max(hp$distance)),label=n),size=3,vjust = -0.5)+
-labs(title=" Harbour porpoise sighting distances at Beaufort levels.")+
-  ylab("Perpendicular sighting distance (km)")+
-  xlab("Beaufort (clumped into groups, 0-1, 2, 3+)")
-
-hp_sum2 <- hp %>% data.frame() %>% count(Observer)
-
-ggplot(data = hp, aes(Observer, distance)) +
-  geom_violin() + 
-  geom_boxplot(width=0.1)+
-  geom_text(data=hp_sum2, 
-            aes(Observer,max(hp$distance)+(0.05*max(hp$distance)),label=n),size=3,vjust = -0.5)+
-labs(title=" Harbour porpoise sighting distances for unique observers.")+
-  ylab("Perpendicular sighting distance (km)")+
-  xlab("Unique observers")
-```
-
-```{r dp_cov_violin}
-dp <- all_ap_sf %>% filter(Species=="Dalls Porpoise",distance<0.9) %>% mutate(Group_Size=factor(Group_Size))
-dp_sum <- dp %>% data.frame() %>% count(Group_Size)
-
-suppressMessages(ggplot(data = dp, aes(Group_Size, distance))) +
-  geom_violin() +
-  geom_boxplot(width=0.1)+
-  geom_text(data=dp_sum, 
-            aes(Group_Size,max(dp$distance)+(0.05*max(dp$distance)),label=n,size=0.1),size=3,vjust = -0.5)+
-  labs(title="Dalls porpoise sighting distances by group size.")+
-  ylab("Perpendicular sighting distance (km)")+
-  xlab("Group size")
-```
-
-\newpage
-
-### Detection Functions
-#### Humpback Whale
-Top model based on AIC selection plotted here:
-
-```{r df_hw}
-sp <-  "Humpback"
-sf <- all_ap_sf %>% filter(Species %like% sp)
-df <- sf %>% data.frame()
-df <- df %>% dplyr::mutate(Clumped_Beaufort = case_when(
-  Beaufort <2 ~ "0-1",
-  Beaufort == 2 ~ "2",
-  Beaufort > 2 ~ "3+"
-))
-
-hw.un2       <- ds(data=df, truncation=2, key="un")
-hw.hr2       <- ds(data=df, truncation=2, key="hr")
-hw.hr.bfc2    <- ds(data=df,truncation=2,key = "hr", formula=~Clumped_Beaufort)
-hw.hr.v2      <- ds(data=df, truncation=2, key="hr", formula=~Visibility)
-hw.hr.obs2    <- ds(data=df, truncation=2, key="hr", formula=~Observer)
-hw.hn.v2      <- ds(data=df, truncation=2, key="hn", formula=~Visibility)
-hw.hr.bfc.v2    <- ds(data=df, truncation=2, key="hr", formula=~Clumped_Beaufort+Visibility)
-
-par(mfrow=c(1,2))
-plot_df(sp, hw.un2,showpoints=F)
-gof_ds(hw.un2)
-```
-
-```{r plotHWdf}
-model.table.hw <- summarize_ds_models(
-hw.un2      ,
-hw.hr2      ,
-hw.hr.bfc2  ,
-hw.hr.v2    ,
-hw.hr.obs2  ,
-hw.hn.v2    ,
-output="plain")
-
-# tab.ft0.7 <-  model.table.0.7km$`Key function`[which(nchar(model.table.0.7km$`Key function`) >11)]
-
-# model.table.hw %<>% mutate(`Key function` = case_when(
-#     nchar(`Key function`)>12 ~ paste0(substring(`Key function`, 1,11),"*"),
-#     nchar(`Key function`) <=12 ~ `Key function`))
-# saveRDS(model_table_2km, "model_table_2km.rds")
-
-# kableExtra::kable(model.table.0.7km, digits=3, row.names = FALSE, escape=FALSE,
-#       caption = paste(sp, " - Comparison of half normal and hazard rate with sea state and group size. Truncation = 0.7 km.")) %>%
-#   kableExtra::footnote(paste0("* ", tab.ft0.7)) %>% 
-  # kableExtra::landscape()
-
-csasdown::csas_table(model.table.hw, digits=3, row.names = FALSE, escape=FALSE, caption=paste(sp, " - Top models. Truncation = 2 km. Clumped Beaufort: 0-1, 2, 3+.")) %>% kableExtra::landscape()
-
-```
-
-\newpage
-#### Harbour Porpoise
-Top model based on AIC selection plotted here:
-
-```{r df_hp}
-sp <-  "Harbour Porpoise"
-sf <- all_ap_sf %>% filter(Species %like% sp)
-df <- sf %>% data.frame()
-df <- df %>% dplyr::mutate(Clumped_Beaufort = case_when(
-  Beaufort <2 ~ "0-1",
-  Beaufort == 2 ~ "2",
-  Beaufort > 2 ~ "3+"
-))
-
-hp.hn.obs.bfc0.7     <- ds(data=df, truncation=0.7, key="hn", formula=~Clumped_Beaufort+Observer)
-hp.hr0.7            <- ds(data=df, truncation=0.7, key="hr")
-hp.hn.bf0.7c       <- ds(data=df, truncation=0.7, key="hn", formula=~Clumped_Beaufort)
-hp.hn.bfc.sz0.7      <- ds(data=df, truncation=0.7, key="hn", formula=~Clumped_Beaufort+Group_Size)
-hp.hn.bfc.obs.v0.7     <- ds(data=df, truncation=0.7, key="hn", formula=~Clumped_Beaufort+Observer+Visibility)
-hp.hn.bfc.vis0.7   <- ds(data=df, truncation=0.7, key="hn", formula=~Clumped_Beaufort+Visibility)
-hp.hn.bfc.sw0.7     <- ds(data=df, truncation=0.7, key="hn", formula=~Clumped_Beaufort+swell)
-
-par(mfrow=c(1,2))
-plot_df(sp, hp.hn.obs.bfc0.7,showpoints=F)
-gof_ds(hp.hn.obs.bfc0.7)
-```
-
-```{r plotHPdf}
-model.table.hp <- summarize_ds_models(
-hp.hr0.7          ,
-hp.hn.obs.bfc0.7  ,
-hp.hn.bf0.7c      ,
-hp.hn.bfc.sz0.7   ,
-hp.hn.bfc.obs.v0.7,
-hp.hn.bfc.vis0.7  ,
-hp.hn.bfc.sw0.7   ,
-  output="plain")
-
-csasdown::csas_table(model.table.hp, digits=3, row.names = FALSE, escape=FALSE, caption = paste(sp, " - Top models. Truncation = 0.7 km. Clumped Beaufort: 0-1, 2, 3+")) %>%
-  kableExtra::landscape()
-
-# kableExtra::kable(modetable.hp, digits=3, row.names = FALSE, escape=FALSE, caption = paste(sp, " - Top performing models. Truncation = 0.7 km. 'bfc' = clumped Beaufort: 0-2, 3, 4+"))%>%
-#   kableExtra::landscape()
-
-```
-
-\newpage
-#### Dalls Porpoise
-Top model based on AIC selection plotted here:
-
-```{r df_dp}
-sp <-  "Dalls Porpoise"
-sf <- all_ap_sf %>% filter(Species %like% sp)
-df <- sf %>% data.frame() %>% 
-  dplyr::mutate(Clumped_Group_Size = case_when(
-  Group_Size ==1 ~ "1",
-  Group_Size ==2 ~ "2",
-  Group_Size ==3 ~ "3",
-  Group_Size >3 ~ "4+"
-))
-
-hn.0.9     <- ds(data=df, truncation=0.9,    key="hn")
-hn.bf0.9    <- ds(data=df, truncation=0.9, key="hn", formula=~Beaufort)
-hn.gl0.9   <- ds(data=df, truncation=0.9, key="hn", formula=~Glare)
-un.0.9     <- ds(data=df, truncation=0.9,    key="un")
-hn.bf.sz0.9  <- ds(data=df, truncation=0.9, key="hn", formula=~Group_Size+Beaufort)
-hn.sz0.9   <- ds(data=df, truncation=0.9, key="hn", formula=~Group_Size)
-hr.sz0.9   <- ds(data=df, truncation=0.9, key="hr", formula=~Group_Size)
-# hn.sw0.9   <- ds(data=df, truncation=0.9, key="hn", formula=~swell)
-
-# hr.szc0.85 <- ds(data=df, truncation=0.85, key="hr", formula=~Clumped_Group_Size)
-# hn.bf0.85 <- ds(data=df, truncation=0.85, key="hn", formula=~Beaufort)
-# hn.0.85   <- ds(data=df, truncation=0.85, key="hn")
-# un.0.85   <- ds(data=df, truncation=0.85, key="un")
-# hn.gl0.85 <- ds(data=df, truncation=0.85, key="hn", formula=~Glare)
-
-model.table.dp <- summarize_ds_models(
-hn.0.9     ,
-hn.bf0.9   ,
-hn.gl0.9   ,
-un.0.9     ,
-hn.bf.sz0.9,
-hn.sz0.9   ,
-hr.sz0.9   ,
-# hn.sw0.9   ,
-  output="plain")
-
-par(mfrow=c(1,2))
-plot_df(sp, hn.0.9,showpoints=F)
-gof_ds(hn.0.9)
-# plot_df(sp, hr.szc0.85,showpoints=F)
-# gof_ds(hr.szc0.85,quiet=T)
-```
-
-```{r plotDPdf}
-
-csasdown::csas_table(model.table.dp, digits=3, row.names = FALSE, escape=FALSE, caption = paste(sp, " - Top models. Truncation = 0.9 km."))
-
-# model.table.dp2 <- summarize_ds_models(
-# hr.szc0.85,
-# hn.bf0.85 ,
-# hn.0.85   ,
-# hn.gl0.85 ,
-#   output="plain")
-# 
-# csasdown::csas_table(model.table.dp2, digits=3, row.names = FALSE, escape=FALSE, caption = paste(sp, " - Top performing models. Truncation = 0.85 km. Clumped Group Size: 1, 2, 3, 4+") ) %>%
-#   kableExtra::landscape()
-
-
-# kableExtra::kable(model.table.dp, digits=3, row.names = FALSE, escape=FALSE,
-#       caption = paste(sp, " - Top performing models. Truncation = 0.7 km. 'bfc' = clumped Beaufort: 0-2, 3, 4+"))%>%
-#   kableExtra::landscape()
-
-```
+## LINE-TRANSECT SURVEYS
+
+Fourteen surveys were conducted between September 2020 and `r month.name[all_effort %>% filter(year == max(year)) %>% dplyr::select(month) %>% max(month)]` `r as.character(max(all_effort$year))`, resulting in a total of `r sum(all_effort_lines$length_km) %>% round(digits=0)` km of effort along pre-determined transect lines in Canadian portions of the study area (Figure \@ref(fig:plot-seasonal-track)). Surveys were conducted at least once during all months with the exception of December. On-effort distance covered varied among seasons, from a low of `r all_effort_lines %>% as.data.frame() %>% group_by(season) %>%  summarise(l=sum(length_km)) %>% dplyr::select(l) %>% min() %>% round(digits=0)` km in `r levels(all_effort_lines$season)[all_effort_lines %>% as.data.frame() %>% group_by(season) %>% summarise(l=sum(length_km)) %>% filter(l==min(l)) %>% dplyr::select(season) %>% as.numeric()] %>% tolower()`, to a high of `r all_effort_lines %>% as.data.frame() %>% group_by(season) %>% summarise(l=sum(length_km)) %>% as.data.frame() %>% dplyr::select(l) %>% max() %>% round(digits=0)` km in `r levels(all_effort_lines$season)[all_effort_lines %>% as.data.frame() %>% group_by(season) %>% summarise(l=sum(length_km)) %>%as.data.frame() %>% filter(l==max(l)) %>% dplyr::select(season) %>% as.numeric()] %>% tolower()`. Coverage of the western-most and northern-most transect lines in some months of each season was limited by weather conditions. 
+
+## SPECIES SIGHTINGS AND GENERAL DISTRIBUTION PATTERNS
+
+A total of `r nrow(all_ap_sf)` sightings of five cetacean species (`r sum(all_ap_sf$Group_Size)` individuals), comprised of humpback whales, harbour porpoises, Dall’s porpoises, fin whales and killer whales, were observed while surveying along pre-determined transect lines (Table \@ref(tab:tab-survey-sightings-sum)). In addition, grey whales and minke whales were sighted in the survey area while “off-effort” (transiting between transect lines). 
+
+Humpback whales were sighted during all seasons (`r all_ap_sf %>% filter(Species == "humpback whale") %>% nrow()` sightings comprised of `r sum(all_ap_sf[which(all_ap_sf$Species=="humpback whale"),]$Group_Size)` individuals); however, no individuals were observed while on-effort in February or March 2021 (Figure \@ref(fig:monthly-hw)). Peak detections occurred in early fall, and secondarily in summer. Winter humpback sightings primarily occurred in Juan de Fuca Strait while spring sightings were concentrated on Swiftsure Bank. The highest number and broadest distribution of humpback sightings occurred in October in both years.
+
+Harbour porpoises were the most frequently sighted species of cetacean (`r all_ap_sf %>% filter(Species == "harbour porpoise") %>% nrow()` sightings, `r sum(all_ap_sf[which(all_ap_sf$Species=="harbour porpoise"),]$Group_Size)` individuals) and were detected during all surveys (all months January through November; Figure \@ref(fig:monthly-hp)). There were fewer sightings in late fall/ early winter, while the greatest number of sightings were in late summer/fall, with a second peak in spring. Most detections involved groups of 1-2 porpoises, but some larger group sizes were encountered including a sighting of approximately 45 individuals in April 2021 in southern Haro Strait. Harbour porpoise sightings were distributed throughout the study area, with greatest concentrations around Haro Strait, and were detected most months year-round throughout the southern Strait of Georgia, Boundary Pass and eastern Juan de Fuca Strait. Sightings of harbour porpoises decreased in western Juan de Fuca Strait and were rare on Swiftsure Bank.
+
+Dall’s porpoises were encountered during all surveys though less frequently than harbour porpoises (`r all_ap_sf %>% filter(Species == "Dall's porpoise") %>% nrow()` sightings, `r sum(all_ap_sf[which(all_ap_sf$Species=="Dall's porpoise"),]$Group_Size)` individuals; Figure \@ref(fig:monthly-dp)). The highest numbers of Dall’s porpoise sightings were in the Strait of Georgia in fall and winter surveys.
+
+Groups of southern resident and Bigg’s (transient) killer whales were encountered `r all_ap_sf %>% filter(Species == "killer whale - southern resident") %>% nrow() %>% english::as.english() %>% as.character()` and `r all_ap_sf %>% filter(Species == "killer whale - Bigg's") %>% nrow() %>% english::as.english() %>% as.character()` times, respectively, while on-effort. `r all_ap_sf %>% filter(Species == "killer whale - unknown ecotype") %>% nrow() %>% english::as.english() %>% as.character() %>% first_up()` groups of killer whales were sighted for which ecotype could not be determined, either because weather conditions prohibited the potential for photo-identification, or because breaking transect to collect identification photographs would have detracted from the primary objective of the survey (i.e. to cover the maximum extent of the survey area possible during each month).
+
+Two single fin whales were sighted in summer in Juan de Fuca Strait (Figure \@ref(fig:plot-non-target)). Single minke whales were sighted on two occasions in southern Haro Strait. Grey whales were sighted on three occasions, two in western Juan de Fuca Strait and one in southern Haro Strait.
+
+## DETECTION FUNCTIONS
+
+Three species (humpback whales, harbour porpoises, and Dall’s porpoises) had sufficient sightings to fit detection functions. For each species, two or more models performed similarly in terms of AIC and goodness of fit. Comparisons of the top-performing models with delta AICs of less than five are presented in Tables \@ref(tab:df-tab-hw), \@ref(tab:df-tab-hp), and \@ref(tab:df-tab-dp).
+
+The top performing detection functions for humpback whales included hazard-rate and half-normal key functions with visibility as a covariate, as well as a uniform key function with cosine adjustment terms of order 1, 2, and a hazard-rate key model with no covariates or series adjustments (Table \@ref(tab:df-tab-hw)). Two models had equal support: the hazard-rate model with visibility as a covariate and the uniform model, having nearly identical AIC scores and similar fit. Average detectability was slightly lower in the uniform model than in the hazard-rate model (0.44, compared to 0.49). The uniform model was selected because the added complexity of including the visibility covariate in the hazard-rate model did not improve model performance. Humpback whale sightings were right-truncated at a distance of 2 km. The resulting effective strip half-width (esw) for the selected model was 0.88 km (Figure \@ref(fig:plot-df-hw)a). Goodness of fit was visually assessed with Q-Q plots (Figure \@ref(fig:plot-df-hw)b).
+
+The best-fitting detection functions for harbour porpoises were half-normal key functions with covariates of Beaufort sea state plus individual observer, or Beaufort alone (Table \@ref(tab:df-tab-hp)). Radial distances estimated by eye rather than calculated using binocular reticles were removed (n = 15) while fitting detection functions, as several of these sightings were estimated as falling directly on the trackline, contributing to some heaping of sightings at zero perpendicular distance. These sightings were returned to the dataset prior to abundance and density estimation. Harbour porpoise sightings were right-truncated at 0.7 km. The half-normal model with covariates of Beaufort and observer was selected, and had an esw of 0.41 km (Figure \@ref(fig:plot-df-hp)a). The distribution of perpendicular detection distances for each category of these covariates are presented in Figure \@ref(fig:violin-hp-bf) and Figure \@ref(fig:violin-hp-obs). Goodness of fit did not vary significantly among the top models (Table \@ref(tab:df-tab-hp)). Average detectability was equivalent among the models with delta AIC less than five.
+
+The detection functions with the lowest AICs for Dall’s porpoises were half-normal key functions with the covariates glare, swell, glare plus swell, or no covariates (Table \@ref(tab:df-tab-dp)). Model averaging was considered but, with the exception of the hazard-rate models that included group size as a covariate, average detectability was very similar among models with delta AICs of less than five. The model with the lowest AIC was therefore selected, the half-normal key model with covariates of swell and glare (Figure \@ref(fig:plot-df-dp)). The relationship between covariates and perpendicular sighting distances are presented in Figure \@ref(fig:violin-dp-sw) and Figure \@ref(fig:violin-dp-gl). Sightings were right-truncated at a distance of 0.9 km and the esw was 0.44 km (Table \@ref(tab:df-tab-dp), Figure \@ref(fig:plot-df-dp)).
+
+## SEASONAL ABUNDANCE ESTIMATES
+
+Abundance and density were estimated seasonally for humpback whales, harbour porpoises, and Dall’s porpoises (Tables \@ref(tab:tab-ab-hw), \@ref(tab:tab-ab-hp), and \@ref(tab:tab-ab-dp)). Abundance is presented for the Canadian portion of the study area only (Figure \@ref(fig:plot-study-area); 2,938 km^2^). Density is presented per 25 km^2^ which was deemed an appropriate scale considering the size of the study area and the detection distances, and facilitates comparison with similar work (e.g. Wright et al., 2021).
+
+Humpback whale estimated abundance was lowest in winter at 18 (CV: 0.36; 95% CI: 9 – 36) animals, significantly increasing through spring and summer to 84 (CV: 0.38; 95% CI: 40 – 174) and 96 (CV: 0.31; 95% CI: 52– 176) animals, respectively, to a peak in fall of 274 (CV: 0.28; 95% CI: 160 – 468; Table \@ref(tab:tab-ab-hw), Figure \@ref(fig:plot-ab)). 
+
+Harbour porpoise estimated abundance was also lowest during winter at 584 (CV: 0.40; 95% CI: 274 – 1,242) animals, increasing through spring and summer to 915 (CV: 0.21; 95% CI: 603 – 1,387) and 1,089 (CV: 0.22; 95% CI: 709 – 1,674) animals, respectively, to its peak in fall of 1,430 (CV: 0.19; 95% CI: 986 – 2,073; Table \@ref(tab:tab-ab-hp), Figure \@ref(fig:plot-ab)). 
+
+Dall’s porpoise seasonal abundance trends differed from those of the other two species (Table \@ref(tab:tab-ab-dp), Figure \@ref(fig:plot-ab)). Dall’s porpoise abundance peaked in winter, the season with lowest harbour porpoise abundance, with an estimated 362 (CV: 0.30; 95% CI: 203 – 643) animals. Estimated Dall’s porpoise abundance then dropped to 131 (CV: 0.39; 95% CI: 62 – 278) animals in spring while harbour porpoise abundance was increasing, and decreased further to 89 (CV: 0.48; 95% CI: 36 – 218) animals in summer. In fall, when harbour porpoise reached their peak abundance, Dall’s porpoise estimated abundance increased to 182 (CV: 0.36; 95% CI: 80 – 413) animals.
+
+
+<!-- ```{r plot-ab, fig.cap = "Estimated seasonal abundance with the lower and upper bounds of a log-normal 95% confidence interval."} -->
+
+<!--    -->
+<!-- ``` -->
+
+<!-- ```{r plot-ab-hw, fig.cap = "humpback whale abundance"} -->
+<!-- plot_ab_hw <- ab_hw %<>% dplyr::select(Season, Abundance = N, L95.N, U95.N) %>%  -->
+<!--   mutate(Species = "humpback whale") %>%  -->
+<!--   mutate(Season=factor(Season, levels = levels(all_ap_sf$season))) -->
+
+<!-- ggplot(plot_ab_hw, aes(Season, Abundance), colour = "black") + -->
+<!--   geom_point(position=position_dodge(.9)) + -->
+<!--   geom_errorbar(aes(ymin = L95.N, ymax = U95.N), width = 0.2, position=position_dodge(.9)) -->
+<!-- ``` -->
 
 
 ```{r oct-hp-sgt}
 ### Compare same month of HP sightings in different years
 # coast <- sf::st_read(dsn = "data", layer = "BC_coast_UTM9")
-# 
+#
 # #-----------------------------------------------------------
-# sp <- "Harbour Porpoise"
+# sp <- "harbour porpoise"
 # ap_sf <- all_ap_sf %>% filter(Species %like% sp)
-# 
+#
 # oct_hp <- all_ap_sf %>% filter(month == 10, Species == sp)
 # oct_lines <- all_effort_lines %>% filter(month == 10)
-# 
+#
 # tx <- oct_hp %>% as.data.frame() %>%  dplyr::group_by(year) %>%
 #   dplyr::summarise(N = n()) %>% as.data.frame()
-# 
-# base_map + 
+#
+# base_map +
 #   geom_sf(data = oct_lines, stroke = 0.25, colour = "grey 40")+
 #   geom_sf(data = oct_hp, stroke = 0.01, alpha = 0.5, aes(size = Count)) +#
 #   scale_size_manual(values = c(1,1.5,2,3)) +
@@ -668,18 +175,18 @@ csasdown::csas_table(model.table.dp, digits=3, row.names = FALSE, escape=FALSE, 
 #   # annotation_custom(leg1Grob, xmin=-124.8, xmax=-124.95, ymin=47.9, ymax=48.1) +
 #   coord +
 #   facet_wrap(~year, drop = F) +
-#     geom_text(data = tx, aes(x = (-124.4), y = 48.9, label = paste0("N = ", N, " sightings")), size = 2) 
+#     geom_text(data = tx, aes(x = (-124.4), y = 48.9, label = paste0("N = ", N, " sightings")), size = 2)
 
 ```
 
 ```{r jan-hp-sgt}
 # jan_hp <- all_ap_sf %>% filter(month == 01, Species == sp)
 # jan_lines <- all_effort_lines %>% filter(month == 01)
-# 
+#
 # tx <- jan_hp %>% as.data.frame() %>%  dplyr::group_by(year) %>%
 #   dplyr::summarise(N = n()) %>% as.data.frame()
-# 
-# base_map + 
+#
+# base_map +
 #   geom_sf(data = jan_lines, stroke = 0.25, colour = "grey 40")+
 #   geom_sf(data = jan_hp, stroke = 0.01, alpha = 0.5, aes(size = Count)) +#
 #   scale_size_manual(values = c(1,1.5,2,3)) +
@@ -687,7 +194,7 @@ csasdown::csas_table(model.table.dp, digits=3, row.names = FALSE, escape=FALSE, 
 #   # annotation_custom(leg1Grob, xmin=-124.8, xmax=-124.95, ymin=47.9, ymax=48.1) +
 #   coord +
 #   facet_wrap(~year, drop = F) +
-#   geom_text(data = tx, aes(x = (-124.4), y = 48.9, label = paste0("N = ", N, " sightings")), size = 2) 
+#   geom_text(data = tx, aes(x = (-124.4), y = 48.9, label = paste0("N = ", N, " sightings")), size = 2)
 ```
 
 
