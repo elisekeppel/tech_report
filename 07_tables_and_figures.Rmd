@@ -50,11 +50,11 @@ hr.bfc2     <- ds(data=df.hw,truncation=2,key = "hr", formula=~Clumped_Beaufort)
 hr.bfc.v2   <- ds(data=df.hw, truncation=2, key="hr", formula=~Clumped_Beaufort+Clumped_Vis)
 hr.obs2     <- ds(data=df.hw, truncation=2, key="hr", formula=~Observer)
 
-hn.gl2      <- ds(data=df.hw, truncation=2, key="hn", formula=~Glare)
+hn.gl2      <- ds(data=df.hw, truncation=2, key="hn", formula=~glare)
 hn.v2       <- ds(data=df.hw, truncation=2, key="hn", formula=~Clumped_Vis)
 hn2         <- ds(data=df.hw, truncation=2, key="hn")
 
-hr.gl2      <- ds(data=df.hw, truncation=2, key="hr", formula=~Glare)
+hr.gl2      <- ds(data=df.hw, truncation=2, key="hr", formula=~glare)
 hr.obs.bfc2 <- ds(data=df.hw, truncation=2, key="hr", formula=~Clumped_Beaufort+Observer)
 hn.v.bfc2   <- ds(data=df.hw, truncation=2, key="hn", formula=~Clumped_Beaufort+Clumped_Vis)
 
@@ -83,7 +83,7 @@ hw <- df.hw %>% dplyr::select(Region.Label,
                 size = Group_Size,
                 Clumped_Vis
                 # Clumped_Beaufort,
-                # Glare,
+                # glare,
                 # swell,
                 # Observer
                 )
@@ -190,12 +190,12 @@ df.dp <- all_ap_sf %>% filter(Species %like% sp) %>%
                     Group_Size>2 ~ "3+"
                   ), levels=  c("1","2","3+"))) %>% data.frame()
 
-hn.swc.gl0.9  <- ds(data=df.dp, truncation=0.9, key="hn", formula=~Clumped_Swell+Glare)
+hn.swc.gl0.9  <- ds(data=df.dp, truncation=0.9, key="hn", formula=~Clumped_Swell+glare)
 hn.swc0.9     <- ds(data=df.dp, truncation=0.9, key="hn", formula=~Clumped_Swell)
 hr.swc.szc0.9  <-ds(data=df.dp, truncation=0.9, key="hr", formula=~Clumped_Swell+Clumped_Group_Size)
 
 hn.0.9        <- ds(data=df.dp, truncation=0.9, key="hn")
-hn.gl0.9      <- ds(data=df.dp, truncation=0.9, key="hn", formula=~Glare)
+hn.gl0.9      <- ds(data=df.dp, truncation=0.9, key="hn", formula=~glare)
 un.0.9        <- ds(data=df.dp, truncation=0.9, key="un")
 
 hr.szc0.9     <- ds(data=df.dp, truncation=0.9, key="hr", formula=~Clumped_Group_Size)
@@ -222,12 +222,12 @@ dp <- df.dp %>% dplyr::select(Region.Label,
                 distance,
                 Species,
                 size = Group_Size,
-                Glare,
+                glare,
                 Clumped_Swell)
 # find transects with no sightings and create NA distance rows
 obs <- full_join(dp, effort) #%>% #left_join(reg) %>% 
 
-hn.swc.gl0.9 <- ds(data=obs, truncation=0.9, key="hn", formula=~Clumped_Swell+Glare)
+hn.swc.gl0.9 <- ds(data=obs, truncation=0.9, key="hn", formula=~Clumped_Swell+glare)
 # summary(hn.sw.gl0.9)
 
 # encounter rate and group size
@@ -549,11 +549,16 @@ ggsave(paste0("knitr-figs-pdf/","study_area.png"),plot=study_area)
 ```{r seasonal-track,results='hide'}
 par(mar=c(0,0,0,0))
 p <- suppressMessages(plot_survey(Save = F,
+                                  data.source="cemore",
                                   border = T,
-                                  single_survey <- F,
+                                  single_survey = F,
                                   incidentals <-  F,
                                   hydrophone <- F,
-                                  sightings_only <- F,
+                                  plot_effort = T, # T/F
+                                  plot_sgt = F,
+                                  effort_data = all_effort_lines,
+                                  season=  T,
+                                  
                                   N=T,
                                   km=T,
                                   depth=F))
@@ -895,19 +900,19 @@ suppressMessages(ggplot(data = dp, aes(Clumped_Swell, distance))) +
 
 ```{r violin-dp-gl, fig.cap="Distribution of perpendicular distances of Dall’s porpoise detections with glare presence/absence. Sightings are truncated at a perpendicular distance of 0.9 km. The shape of the violin plots indicate the distribution of the data; i.e. wider sections indicate areas of higher probability that the perpendicular distances will fall in these ranges. Boxplots within the violin plots indicate the median and interquartile ranges of perpendicular distances. The number of Dall’s porpoise detections in each glare category are included at the top of each plot."}
 dp <- all_ap_sf %>% filter(Species=="Dall's porpoise",distance<0.9)
-dp %<>% mutate(Glare=factor(case_when(
-  Glare == "n" ~ "No Glare",
-  Glare == "y" ~ "Glare"),
+dp %<>% mutate(glare=factor(case_when(
+  glare == "n" ~ "No Glare",
+  glare == "y" ~ "Glare"),
   levels=c("No Glare", "Glare")
 ))
 
-dp_sum2 <- dp %>% data.frame() %>% count(Glare)
+dp_sum2 <- dp %>% data.frame() %>% count(glare)
 
-suppressMessages(ggplot(data = dp, aes(Glare, distance))) +
+suppressMessages(ggplot(data = dp, aes(glare, distance))) +
   geom_violin() +
   geom_boxplot(width=0.1)+
   geom_text(data=dp_sum2,
-            aes(Glare,max(dp$distance)-(0.005*max(hp$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5)+
+            aes(glare,max(dp$distance)-(0.005*max(hp$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5)+
   ylab("Perpendicular sighting distance (km)")+
   xlab(NULL)+
   theme(axis.text=element_text(size=fig_axis_size),

@@ -23,10 +23,13 @@ year <- 2022
 
 # Load previously saved data
 all_effort <- load_effort(year, as.numeric(month), single_survey = F, vessel = "MB") %>% filter(date<"2022-03-01")
-all_effort_lines <- readRDS(paste0("output/all_effort_lines_to ", survey_title, ".rds")) %>%
+# all_effort_lines <- readRDS(paste0("output/all_effort_lines_to ", survey_title, ".rds")) %>%
+  # mutate(length_km = as.numeric(st_length(geometry))/1000)
+all_effort_lines <- get_effort_lines(all_effort) %>%
   mutate(length_km = as.numeric(st_length(geometry))/1000)
 
-all_ap_sf <- readRDS(paste0("output/all_effort_sgt_to ", survey_title, ".rds")) %>%
+all_ap_sf <- load_sightings(year, as.numeric(month), single_survey = F, vessel="MB") %>% filter(date<"2022-03-01") %>% 
+  # readRDS(paste0("output/all_effort_sgt_to ", survey_title, ".rds")) %>%
   # rename(Observer=SightedBy) %>%
   dplyr::mutate(
                 Clumped_Group_Size = factor(
