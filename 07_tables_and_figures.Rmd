@@ -27,12 +27,12 @@ sgt_sum <- all_ap_sf %>%  dplyr::group_by(Species) %>%
 ```
 
 
-```{r tab-survey-sightings-sum}
-pdf <- knitr:::is_latex_output()
-sgt_sum %>%
-  csasdown::csas_table(align=c('l','r','r','r'), longtable = F, escape = FALSE, font_size=9,  caption="Survey sightings summary. Number of sightings, number of individuals sighted and average group size (+/- standard deviation). All data presented are on-effort survey sightings unless otherwise noted.")%>%
-  kableExtra::column_spec(c(1:4), width = c("2in","1in","1in","1.2in"))
-```
+<!-- ```{r tab-survey-sightings-sum} -->
+<!-- pdf <- knitr:::is_latex_output() -->
+<!-- sgt_sum %>% -->
+<!--   csasdown::csas_table(align=c('l','r','r','r'), longtable = F, escape = FALSE, font_size=9,  caption="Survey sightings summary. Number of sightings, number of individuals sighted and average group size (+/- standard deviation). All data presented are on-effort survey sightings unless otherwise noted.")%>% -->
+<!--   kableExtra::column_spec(c(1:4), width = c("2in","1in","1in","1.2in")) -->
+<!-- ``` -->
 
 ```{r df-hw}
 sp <-  "humpback"
@@ -41,38 +41,79 @@ df.hw <- all_ap_sf %>% filter(Species %like% sp) %>% data.frame()
 if(file.exists("data/hw-models.Rdata")){
   load("data/hw-models.Rdata")
 }else{
-hr.v2       <- ds(data=df.hw, truncation=2, key="hr", formula=~Clumped_Vis)
-un2         <- ds(data=df.hw, truncation=2, key="un")
-hr2         <- ds(data=df.hw, truncation=2, key="hr")
-hr.obs.v2   <- ds(data=df.hw, truncation=2, key="hr", formula=~Clumped_Vis+Observer)
 
-hr.bfc2     <- ds(data=df.hw,truncation=2,key = "hr", formula=~Clumped_Beaufort)
-hr.bfc.v2   <- ds(data=df.hw, truncation=2, key="hr", formula=~Clumped_Beaufort+Clumped_Vis)
-hr.obs2     <- ds(data=df.hw, truncation=2, key="hr", formula=~Observer)
+hw1.5.un.cos       <-ds(df.hw, key = "un", truncation = 1.5)   
+hw1.5.hn           <-ds(df.hw, key = "hn", truncation = 1.5)    
+# hw1.5.hr           <-ds(df.hw, key = "hr", truncation = 1.5)
 
-hn.gl2      <- ds(data=df.hw, truncation=2, key="hn", formula=~glare)
-hn.v2       <- ds(data=df.hw, truncation=2, key="hn", formula=~Clumped_Vis)
-hn2         <- ds(data=df.hw, truncation=2, key="hn")
+# hw1.5.hn.vis       <-ds(df.hw, 1.5, key="hn", formula=~Visibility)
+hw1.5.hn.visc       <-ds(df.hw, 1.5, key="hn", formula=~Clumped_Visibility)
+# hw1.5.hn.g90c      <-ds(df.hw, 1.5, key="hn", formula=~Glare90)            
+# hw1.5.hn.g90sw      <-ds(df.hw, 1.5, key="hn", formula=~glare_swath)
+# hw1.5.hn.g45sw      <-ds(df.hw, 1.5, key="hn", formula=~glare_swath45)      # none fit      
 
-hr.gl2      <- ds(data=df.hw, truncation=2, key="hr", formula=~glare)
-hr.obs.bfc2 <- ds(data=df.hw, truncation=2, key="hr", formula=~Clumped_Beaufort+Observer)
-hn.v.bfc2   <- ds(data=df.hw, truncation=2, key="hn", formula=~Clumped_Beaufort+Clumped_Vis)
+# hw1.5.hn.bf        <-ds(df.hw, 1.5, key="hn", formula=~Beaufort)
+# hw1.5.hn.bfc        <-ds(df.hw, 1.5, key="hn", formula=~Clumped_Beaufort)
+# hw1.5.hn.szc        <-ds(df.hw, key = "hn", truncation = 1.5, formula=~Clumped_Group_Size)
+# hw1.5.hn.obs       <-ds(df.hw, key = "hn", truncation = 1.5, formula=~Observer)
+
+# hw1.5.hn.vis.g90c  <-ds(df.hw, key = "hn", truncation = 1.5, formula=~Visibility+Glare90)
+# hw1.5.hn.v.g90c    <-ds(df.hw, key = "hn", truncation = 1.5, formula=~Clumped_Visibility+Glare90)
+hw1.5.hn.v.bf      <-ds(df.hw, key = "hn", truncation = 1.5, formula=~Clumped_Visibility+Beaufort)
+hw1.5.hn.v.bfc      <-ds(df.hw, key = "hn", truncation = 1.5, formula=~Clumped_Visibility+Clumped_Beaufort)
+hw1.5.hn.v.szc      <-ds(df.hw, key = "hn", truncation = 1.5, formula=~Clumped_Visibility+Clumped_Group_Size)
+# hr.v2       <- ds(data=df.hw, truncation=2, key="hr", formula=~Clumped_Vis)
+# un2         <- ds(data=df.hw, truncation=2, key="un")
+# hr2         <- ds(data=df.hw, truncation=2, key="hr")
+hw1.5.hn.v.obs   <- ds(data=df.hw, truncation=1.5, key="hn", formula=~Clumped_Visibility+Observer)
+# 
+# hr.bfc2     <- ds(data=df.hw,truncation=2,key = "hr", formula=~Clumped_Beaufort)
+# hr.bfc.v2   <- ds(data=df.hw, truncation=2, key="hr", formula=~Clumped_Beaufort+Clumped_Vis)
+# hr.obs2     <- ds(data=df.hw, truncation=2, key="hr", formula=~Observer)
+# 
+# hn.gl2      <- ds(data=df.hw, truncation=2, key="hn", formula=~glare)
+# hn.v2       <- ds(data=df.hw, truncation=2, key="hn", formula=~Clumped_Vis)
+# hn2         <- ds(data=df.hw, truncation=2, key="hn")
+# 
+# hr.gl2      <- ds(data=df.hw, truncation=2, key="hr", formula=~glare)
+# hr.obs.bfc2 <- ds(data=df.hw, truncation=2, key="hr", formula=~Clumped_Beaufort+Observer)
+# hn.v.bfc2   <- ds(data=df.hw, truncation=2, key="hn", formula=~Clumped_Beaufort+Clumped_Vis)
+
+
+summarize_ds_models(
+  hw1.5.un.cos    ,
+hw1.5.hn        ,
+# hw1.5.hr        ,
+
+# hw1.5.hn.vis    ,
+hw1.5.hn.visc   ,
+# hw1.5.hn.g90c   ,
+# hw1.5.hn.g90sw   ,
+# hw1.5.hn.bf     ,
+# hw1.5.hn.bfc,
+# hw1.5.hn.szc     ,
+# hw1.5.hn.obs,
+hw1.5.hn.v.bf,
+hw1.5.hn.v.bfc,
+hw1.5.hn.v.szc,
+hw1.5.hn.v.obs,
+# hw1.5.hn.szc2     ,
+output = "plain")
 
 save(
-hr.v2 ,    
-un2        ,
-hr2        ,
-hr.obs.v2  ,
-hr.bfc2    ,
-hr.bfc.v2  ,
-hr.obs2    ,
-hn.gl2     ,
-hn.v2      ,
-hn2        ,
-hr.gl2     ,
-hr.obs.bfc2,
-hn.v.bfc2  ,
-     file="data/hw-models.RData")
+hw1.5.un.cos    ,
+hw1.5.hn        ,
+# hw1.5.hr        ,
+# hw1.5.hn.vis    ,
+hw1.5.hn.visc   ,
+hw1.5.hn.g90c   ,
+hw1.5.hn.bf     ,
+# hw1.5.hn.sz     ,
+# hw1.5.hn.vis.g90c,
+hw1.5.hn.v.g90c ,
+hw1.5.hn.v.bf   ,
+# hw1.5.hn.v.sz   ,
+  file="data/hw-models.RData")
 }
 
 hw <- df.hw %>% dplyr::select(Region.Label,
@@ -81,19 +122,21 @@ hw <- df.hw %>% dplyr::select(Region.Label,
                 distance,
                 Species,
                 size = Group_Size,
-                Clumped_Vis
+                Clumped_Visibility#,
                 # Clumped_Beaufort,
-                # glare,
+                # Glare90,
                 # swell,
                 # Observer
                 )
 # find transects with no sightings and create NA distance rows
 obs <- full_join(hw, effort) #%>% #left_join(reg) %>% 
 
-un.2 <- ds(data=obs, truncation=2, key="un")
+# un.2 <- ds(data=obs, truncation=2, key="un")
+hw1.5.hn.v    <-ds(obs, key = "hn", truncation = 1.5, formula=~Clumped_Visibility)
+
 # summary(un.2)
 # encounter rate and group size
-er <- un.2$dht$individuals$summary[c(1:4),c(1,5,6,8,9)] %>% 
+er <- hw1.5.hn.v$dht$individuals$summary[c(1:10),c(1,5,7,9,10)] %>% 
   transmute(Season=Region,
             n     =round(n,     digits=0), 
             ER    =round(ER   , digits=2),
@@ -101,42 +144,130 @@ er <- un.2$dht$individuals$summary[c(1:4),c(1,5,6,8,9)] %>%
             GS=round(mean.size, digits=2)
             )
 # abundance
-Nhat_t <- un.2$dht$individuals$N[c(1:4),c(1,2,4,5,6)] %>% 
+Nhat_t <- hw1.5.hn.v$dht$individuals$N[c(1:10),c(1,2,4,5,6)] %>% 
   transmute(Season=Label,
             N=    round(Estimate,digits=0), 
             cv.N= round(cv,      digits=2),
             L95.N=round(lcl,     digits=0),
             U95.N=round(ucl,     digits=0))
 # density
-d <- un.2$dht$individuals$D[c(1:4),c(1,2,4,5,6)]  %>% 
+d <- hw1.5.hn.v$dht$individuals$D[c(1:10),c(1,2,5,6)]  %>% 
   transmute(Season=Label,
             D =    round(Estimate*25,digits=2),
-            cv.D = round(cv,         digits=2),
+            # cv.D = round(cv,         digits=2),
             L95.D= round(lcl*25,     digits=2),
             U95.D= round(ucl*25,     digits=2))
 
-ab_hw <- full_join(er, Nhat_t) %>% full_join(d) %>% tibble::as_tibble() 
-ab_hw_data <- ab_hw[order(ab_hw$N),]
+ab_hw <- full_join(er, Nhat_t) %>% full_join(d) %>% tibble::as_tibble() %>% dplyr::select(1:6,8:12,7)
+# ab_hw <- ab_hw[order(ab_hw$N),]
+```
+
+```{r df-tab-hw}
+model.table.hw <- summarize_ds_models(
+  hw1.5.un.cos   ,
+  hw1.5.hn       ,
+  # hw1.5.hn.vis   ,
+  hw1.5.hn.visc,
+  hw1.5.hn.g90c  ,
+  hw1.5.hn.bf    ,
+  # hw1.5.hn.sz    ,
+  hw1.5.hn.v.g90c ,
+  # hw1.5.hn.vis.g90c,
+  hw1.5.hn.v.bf   ,
+  # hw1.5.hn.v.sz   ,
+  output="plain") %>% tibble::as_tibble()  %>% 
+  rename("SE (Average detect.)"="se(Average detectability)",
+         "Average detect."="Average detectability",
+         "CvM p-value"="C-vM $p$-value") %>% 
+  mutate(
+    # Formula=gsub("Clumped_","",Formula),
+         Formula=gsub("Group_Size", "Group Size", Formula),
+         Formula=gsub("90c","",Formula)) %>% dplyr::select(-Model)
+
+# pdf <- knitr:::is_latex_output()
+model.table.hw %>%
+  csas_table(
+    
+    escape = FALSE, font_size=9,
+             align = c("l","r","r","r","r","r"), digits=2,  longtable = F,
+  caption = paste("Humpback whale detection function models; truncation distance=1.5 km. Comparison among models with strong support (i.e. delta AIC less than five). Key function, Formula=covariates in model, CvM p-value=Cramer-von-Mises test p-value, Average detect.=average detectability, SE(Average detect.)=standard error of the average detectability. Delta AIC= difference in AIC from the top performing model.")) %>%
+  kableExtra::column_spec(c(1:6), width = c("2in", "1.2in",".5in",".7in","0.7in",".5in"))
 ```
 
 ```{r df-hp}
-if(file.exists("data/hp-models.Rdata")){
-  load("data/hp-models.Rdata")
-}else{
   sp <-  "harbour porpoise"
   df.hp <- all_ap_sf %>% filter(Species %like% sp) %>% 
     mutate(is.na(Reticle)) %>% data.frame()
   
-  hn.bfc.obs0.7 <- ds(data=df.hp, truncation=0.7, key="hn", formula=~Clumped_Beaufort+Observer)
-  hn.bfc0.7     <- ds(data=df.hp, truncation=0.7, key="hn", formula=~Clumped_Beaufort)
-  hn.bfc.szc0.7 <- ds(data=df.hp, truncation=0.7, key="hn", formula=~Clumped_Beaufort+Clumped_Group_Size)
+  if(file.exists("data/hp-models.Rdata")){
+  load("data/hp-models.Rdata")
+}else{
+  un0.65        <- ds(data=df.hp, truncation=0.65, key="un")
+  # hn0.65        <- ds(data=df.hp, truncation=0.65, key="hn")
+  # hr0.65        <- ds(data=df.hp, truncation=0.65, key="hr")
   
-  save(hn.bfc.obs0.7,
-       hn.bfc0.7    ,
-       hn.bfc.szc0.7,
-       df.hp,
-       file="data/hp-models.RData")
+  hn.bfc0.65        <- ds(data=df.hp, truncation=0.65, key="hn", formula=~Clumped_Beaufort)
+  hn.v0.65        <- ds(data=df.hp, truncation=0.65, key="hn", formula=~Visibility)
+  # hn.vc0.65        <- ds(data=df.hp, truncation=0.65, key="hn", formula=~Clumped_Visibility)
+  hn.szc0.65        <- ds(data=df.hp, truncation=0.65, key="hn", formula=~Clumped_Group_Size)
+  # hn.szc2.0.65        <- ds(data=df.hp, truncation=0.65, key="hn", formula=~Clumped_Group_Size2)
+  hn.obs0.65        <- ds(data=df.hp, truncation=0.65, key="hn", formula=~Observer)
+  
+  hn.bfc.obs0.65    <- ds(data=df.hp, truncation=0.65, key="hn", formula=~Clumped_Beaufort+Observer)
+  hn.bfc.v0.65      <- ds(data=df.hp, truncation=0.65, key="hn", formula=~Clumped_Beaufort+Visibility)
+  hn.bfc.szc0.65    <- ds(data=df.hp, truncation=0.65, key="hn", formula=~Clumped_Beaufort+Clumped_Group_Size)
+  hn.bfc.obs.szc0.65  <- ds(data=df.hp, truncation=0.65, key="hn", formula=~Clumped_Beaufort+Observer+Clumped_Group_Size)
+  hn.bfc.obs.v0.65  <- ds(data=df.hp, truncation=0.65, key="hn", formula=~Clumped_Beaufort+Observer+Visibility)
+  hn.bfc..obs0.65   <- ds(data=df.hp, truncation=0.65, key="hn", formula=~Clumped_Beaufort*Observer)
+  
+  
+  
+hw1.5.un.cos       <-ds(df.hw, key = "un", truncation = 1.5)   
+hw1.5.hn           <-ds(df.hw, key = "hn", truncation = 1.5)    
+# hw1.5.hr           <-ds(df.hw, key = "hr", truncation = 1.5)
+
+# hw1.5.hn.vis       <-ds(df.hw, 1.5, key="hn", formula=~Visibility)
+hw1.5.hn.visc       <-ds(df.hw, 1.5, key="hn", formula=~Clumped_Visibility)
+# hw1.5.hn.g90c      <-ds(df.hw, 1.5, key="hn", formula=~Glare90)            
+# hw1.5.hn.g90sw      <-ds(df.hw, 1.5, key="hn", formula=~glare_swath)
+# hw1.5.hn.g45sw      <-ds(df.hw, 1.5, key="hn", formula=~glare_swath45)      # none fit      
+
+# hw1.5.hn.bf        <-ds(df.hw, 1.5, key="hn", formula=~Beaufort)
+# hw1.5.hn.bfc        <-ds(df.hw, 1.5, key="hn", formula=~Clumped_Beaufort)
+# hw1.5.hn.szc        <-ds(df.hw, key = "hn", truncation = 1.5, formula=~Clumped_Group_Size)
+# hw1.5.hn.obs       <-ds(df.hw, key = "hn", truncation = 1.5, formula=~Observer)
+  
+  
+  save(
+    hn.bfc0.65        ,
+    hn.szc0.65,
+    hn.obs0.65,
+    hn.bfc.obs0.65    ,
+    hn.bfc.szc0.65    ,
+    hn.bfc.obs.szc0.65,
+    hn.bfc..obs0.65 ,
+    file="data/hp-models.RData")
 }
+  
+  summarize_ds_models(
+    un0.65     ,
+# hn0.65   ,
+# hr0.65   ,
+# hn.bf0.65  ,
+hn.bfc0.65 ,
+hn.v0.65   ,
+# hn.vc0.65,
+hn.szc0.65 ,
+# hn.szc2.0.65,
+hn.obs0.65 ,
+hn.bfc.obs0.65    ,
+hn.bfc.v0.65      ,
+hn.bfc.szc0.65    ,
+hn.bfc.obs.szc0.65,
+hn.bfc.obs.v0.65,
+hn.bfc..obs0.65   ,
+output="plain"
+  )
 
 hp <- df.hp %>% dplyr::select(Region.Label,
                 Sample.Label,
@@ -148,18 +279,18 @@ hp <- df.hp %>% dplyr::select(Region.Label,
 # find transects with no sightings and create NA distance rows
 obs <- full_join(hp, effort) #%>% #left_join(reg) %>% 
 
-hn.bfc.obs0.7 <- ds(data=obs, truncation=0.7, key="hn", formula=~Clumped_Beaufort+Observer)
+hp.0.65.hn.bfc.obs <- ds(data=obs, truncation=0.65, key="hn", formula=~Clumped_Beaufort+Observer)
 # summary(hn.bfc.obs0.7)
 
 # encounter rate and group size
-er <- hn.bfc.obs0.7$dht$individuals$summary[c(1:4),c(1,5,6,8,9)] %>% 
+er <- hp.0.65.hn.bfc.obs$dht$individuals$summary[c(1:10),c(1,5,7,9,10)] %>% 
   transmute(Season=Region,
             n     =round(n,         digits=0), 
             ER    =round(ER,        digits=2),
             cv.ER =round(cv.ER,     digits=2),
             GS=    round(mean.size, digits=2))
 # abundance
-Nhat_t <- hn.bfc.obs0.7$dht$individuals$N[c(1:4),c(1,2,4,5,6)] %>% 
+Nhat_t <- hp.0.65.hn.bfc.obs$dht$individuals$N[c(1:10),c(1,2,4,5,6)] %>% 
   transmute(Season=Label,
             N=    round(Estimate,digits=0), 
             cv.N= round(cv,      digits=2),
@@ -167,141 +298,28 @@ Nhat_t <- hn.bfc.obs0.7$dht$individuals$N[c(1:4),c(1,2,4,5,6)] %>%
             U95.N=round(ucl,     digits=0))
 
 # density
-d <- hn.bfc.obs0.7$dht$individuals$D[c(1:4),c(1,2,4,5,6)] %>% 
+d <- hp.0.65.hn.bfc.obs$dht$individuals$D[c(1:10),c(1,2,5,6)] %>% 
   transmute(Season=Label,
             D =    round(Estimate*25,digits=2),
-            cv.D = round(cv,         digits=2),
+            # cv.D = round(cv,         digits=2),
             L95.D= round(lcl*25,     digits=2),
             U95.D= round(ucl*25,     digits=2))
 
-ab_hp <- full_join(er, Nhat_t) %>% full_join(d) %>% tibble::as_tibble() 
-ab_hp_data <- ab_hp[order(ab_hp$N),]
-```
-
-```{r df-dp}
-if(file.exists("data/dp-models.Rdata")){
-  load("data/dp-models.Rdata")
-}else{
-sp <-  "Dall's porpoise"
-df.dp <- all_ap_sf %>% filter(Species %like% sp) %>% 
-  dplyr::mutate(Clumped_Group_Size2 = factor(dplyr::case_when(
-                    Group_Size==1 ~ "1",
-                    Group_Size==2 ~ "2",
-                    Group_Size>2 ~ "3+"
-                  ), levels=  c("1","2","3+"))) %>% data.frame()
-
-hn.swc.gl0.9  <- ds(data=df.dp, truncation=0.9, key="hn", formula=~Clumped_Swell+glare)
-hn.swc0.9     <- ds(data=df.dp, truncation=0.9, key="hn", formula=~Clumped_Swell)
-hr.swc.szc0.9  <-ds(data=df.dp, truncation=0.9, key="hr", formula=~Clumped_Swell+Clumped_Group_Size)
-
-hn.0.9        <- ds(data=df.dp, truncation=0.9, key="hn")
-hn.gl0.9      <- ds(data=df.dp, truncation=0.9, key="hn", formula=~glare)
-un.0.9        <- ds(data=df.dp, truncation=0.9, key="un")
-
-hr.szc0.9     <- ds(data=df.dp, truncation=0.9, key="hr", formula=~Clumped_Group_Size)
-
-hn.v0.9       <- ds(data=df.dp, truncation=0.9, key="hn", formula=~Clumped_Vis)
-hn.bfc0.9     <- ds(data=df.dp, truncation=0.9, key="hn", formula=~Clumped_Beaufort)
-
-save(
-hn.swc.gl0.9, 
-hn.swc0.9    ,
-hr.swc.szc0.9,
-hn.0.9       ,
-hn.gl0.9     ,
-un.0.9       ,
-hr.szc0.9    ,
-hn.v0.9      ,
-hn.bfc0.9    ,
-     df.dp,
-     file="data/dp-models.RData")
-}
-
-dp <- df.dp %>% dplyr::select(Region.Label,
-                Sample.Label,
-                distance,
-                Species,
-                size = Group_Size,
-                glare,
-                Clumped_Swell)
-# find transects with no sightings and create NA distance rows
-obs <- full_join(dp, effort) #%>% #left_join(reg) %>% 
-
-hn.swc.gl0.9 <- ds(data=obs, truncation=0.9, key="hn", formula=~Clumped_Swell+glare)
-# summary(hn.sw.gl0.9)
-
-# encounter rate and group size
-er <- hn.swc.gl0.9$dht$individuals$summary[c(1:4),c(1,5,6,8,9)]  %>% 
-  transmute(Season=Region,
-            n     =round(n,     digits=0), 
-            ER    =round(ER,    digits=2),
-            cv.ER =round(cv.ER, digits=2),
-            GS=round(mean.size, digits=2))
-# abundance
-Nhat_t <- hn.swc.gl0.9$dht$individuals$N[c(1:4),c(1,2,4,5,6)] %>% 
-  transmute(Season=Label,
-            N=    round(Estimate,digits=0), 
-            cv.N= round(cv,      digits=2),
-            L95.N=round(lcl,     digits=0),
-            U95.N=round(ucl,     digits=0))
-# density
-d <- hn.swc.gl0.9$dht$individuals$D[c(1:4),c(1,2,4,5,6)] %>% 
-  transmute(Season=Label,
-            D =    round(Estimate*25,digits=2), # *25 cuz density=indivs/25km^2
-            cv.D = round(cv,         digits=2),
-            L95.D= round(lcl*25,     digits=2),
-            U95.D= round(ucl*25,     digits=2))
-
-ab_dp <- full_join(er, Nhat_t) %>% full_join(d) %>% tibble::as_tibble() #%>% 
-  # mutate_if(is.numeric, round, digits = 2) 
-ab_dp_data <- ab_dp[order(ab_dp$N),]
-```
-
-```{r df-tab-hw}
-sp="humpback whale"
-model.table.hw <- summarize_ds_models(
-hr.v2      ,
-un2        ,
-hr2        ,
-hr.obs.v2  ,
-
-hr.bfc2    ,
-hr.bfc.v2  ,
-hr.obs2    ,
-
-hn.gl2     ,
-hn.v2      ,
-hn2        ,
-
-hr.gl2     ,
-hr.obs.bfc2,
-hn.v.bfc2  ,
-output="plain") %>% tibble::as_tibble()  %>% 
-  rename("SE (Average detect.)"="se(Average detectability)",
-         "Average detect."="Average detectability",
-         "CvM p-value"="C-vM $p$-value") %>% 
-  mutate(Formula=gsub("Clumped_","",Formula),
-         Formula=gsub("Group_Size", "Group Size", Formula)) %>% dplyr::select(-Model)
-
-model.table.hw$Formula <- gsub("Vis","Visibility",model.table.hw$Formula)
-
-pdf <- knitr:::is_latex_output()
-model.table.hw %>%
-  csas_table(
-    
-    escape = FALSE, font_size=9,
-             align = c("l","r","r","r","r","r"), digits=2,  longtable = F,
-  caption = paste("Humpback whale detection function models; truncation distance=2 km. Comparison among models with strong support (i.e. delta AIC less than five). Key function, Formula=covariates in model, CvM p-value=Cramer-von-Mises test p-value, Average detect.=average detectability, SE(Average detect.)=standard error of the average detectability. Delta AIC= difference in AIC from the top performing model.")) %>%
-  kableExtra::column_spec(c(1:6), width = c("2in", "1.2in",".5in",".7in","0.7in",".5in"))
+ab_hp <- full_join(er, Nhat_t) %>% full_join(d) %>% tibble::as_tibble()  %>% dplyr::select(1:6,8:12,7)
+# ab_hp_data <- ab_hp[order(ab_hp$N),]
 ```
 
 ```{r df-tab-hp}
 sp="harbour porpoise"
 model.table.hp <- summarize_ds_models(
-hn.bfc.obs0.7,
-hn.bfc0.7    ,
-hn.bfc.szc0.7,
-output="plain") %>% tibble::as_tibble()  %>% 
+  hn.bfc0.65        ,
+  hn.szc0.65        ,
+  # hn.obs0.65        ,
+  hn.bfc.obs0.65    ,
+  # hn.bfc.szc0.65    ,
+  hn.bfc.obs.szc0.65,
+  # hn.bfc..obs0.65   ,
+  output="plain") %>% tibble::as_tibble()  %>% 
   rename("SE (Average detect.)"="se(Average detectability)",
          "Average detect."="Average detectability",
          "CvM p-value"="C-vM $p$-value") %>% 
@@ -314,48 +332,183 @@ model.table.hp %>%
     
     escape = FALSE, font_size=9,
              align = c("l","r","r","r","r","r"), digits=2,  longtable = F,
-  caption = paste("Harbour porpoise detection function models; truncation distance=0.7 km. Comparison among models with strong support (i.e. delta AIC less than five). Key function, Formula=covariates in model, CvM p-value=Cramer-von-Mises test p-value, Average detect.=average detectability, SE(Average detect.)=standard error of the average detectability. Delta AIC= difference in AIC from the top performing model.")) %>%
+  caption = paste("Harbour porpoise detection function models; truncation distance=0.65 km. Comparison among models with strong support (i.e. delta AIC less than five). Key function, Formula=covariates in model, CvM p-value=Cramer-von-Mises test p-value, Average detect.=average detectability, SE(Average detect.)=standard error of the average detectability. Delta AIC= difference in AIC from the top performing model.")) %>%
   kableExtra::column_spec(c(1:6), width = c("1.6in", "1.2in",".7in",".7in","0.7in",".7in"))
 
 ```
 
+```{r df-dp}
+sp <-  "Dall's porpoise"
+df.dp <- all_ap_sf %>% filter(Species %like% sp) %>% data.frame()
+
+if(file.exists("data/dp-models.Rdata")){
+load("data/dp-models.Rdata")
+}else{
+dp0.8.un       <-ds(df.dp, key = "un", truncation = 0.8)
+dp0.8.hn       <-ds(df.dp, key = "hn", truncation = 0.8)
+# dp0.8.hr       <-ds(df.dp, key = "hr", truncation = 0.8)
+
+dp0.8.hn.bfc           <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Beaufort)
+# dp0.8.hn.v             <-ds(df.dp, 0.8, key="hn", formula=~Visibility)
+dp0.8.hn.szc        <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Group_Size)
+dp0.8.hn.g90        <-ds(df.dp, 0.8, key="hn", formula=~Glare90)
+# dp0.8.hn.g90y       <-ds(df.dp, 0.8, key="hn", formula=~Glare90y)                
+# dp0.8.hn.g90c          <-ds(df.dp, 0.8, key="hn", formula=~Glare90)
+# dp0.8.hn.g45c       <-ds(df.dp, 0.8, key="hn", formula=~Glare45)                
+# dp0.8.hn.g45y        <-ds(df.dp, 0.8, key="hn", formula=~Glare45y)
+# dp0.8.hn.sw           <-ds(df.dp, 0.8, key="hn", formula=~swell)
+dp0.8.hn.swc         <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Swell)
+dp0.8.hn.swc.g90c     <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Swell+Glare90)
+dp0.8.hn.swc.gl     <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Swell+glare_swath)
+dp0.8.hn.swc.bfc      <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Swell+Clumped_Beaufort)
+dp0.8.hn.swc.szc      <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Swell+Clumped_Group_Size)
+# dp0.8.hn.swc..g90c     <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Swell*Glare90)
+# dp0.8.hn.swc.g90c.bfc  <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Swell+Glare90+Clumped_Beaufort)
+# dp0.8.hn.swc.g45c.szc  <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Swell+Glare45+Clumped_Group_Size)
+# dp0.8.hn.swc..g45c     <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Swell*Glare45)
+dp0.8.hn.swc.obs      <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Swell+Observer)
+# dp0.8.hn.swc..obs      <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Swell*Observer)
+# dp0.8.hn.swc2 <-ds(df.dp, 0.8, key="hn", formula=~Clumped_Swell2)
+dp0.8.hn.ob   <-ds(df.dp, 0.8, key="hn", formula=~Observer)
+
+dp0.8.hn.gl   <-ds(df.dp, 0.8, key="hn", formula=~glare_swath)
+# dp0.8.hn.gl45   <-ds(df.dp, 0.8, key="hn", formula=~glare_swath45) # none fit
+
+# From Feb
+# hn.swc.gl0.9  <- ds(data=df.dp, truncation=0.9, key="hn", formula=~Clumped_Swell+glare)
+# hn.swc0.9     <- ds(data=df.dp, truncation=0.9, key="hn", formula=~Clumped_Swell)
+# hr.swc.szc0.9  <-ds(data=df.dp, truncation=0.9, key="hr", formula=~Clumped_Swell+Clumped_Group_Size)
+# 
+# hn.0.9        <- ds(data=df.dp, truncation=0.9, key="hn")
+# hn.gl0.9      <- ds(data=df.dp, truncation=0.9, key="hn", formula=~glare)
+# un.0.9        <- ds(data=df.dp, truncation=0.9, key="un")
+# 
+# hr.szc0.9     <- ds(data=df.dp, truncation=0.9, key="hr", formula=~Clumped_Group_Size)
+# 
+# hn.v0.9       <- ds(data=df.dp, truncation=0.9, key="hn", formula=~Clumped_Vis)
+# hn.bfc0.9     <- ds(data=df.dp, truncation=0.9, key="hn", formula=~Clumped_Beaufort)
+
+save(
+  dp0.8.hn.swc        ,
+  dp0.8.hn.swc.g90c   ,
+  # dp0.8.hn.swc..g90c  ,
+  dp0.8.hn.g90c,
+  dp0.8.un ,
+  dp0.8.hn ,
+  file="data/dp-models.RData")
+}
+
+summarize_ds_models(
+  dp0.8.un ,
+dp0.8.hn ,
+dp0.8.hn.bfc,
+# dp0.8.hn.v  ,
+dp0.8.hn.szc,
+# dp0.8.hn.sw  ,
+dp0.8.hn.swc ,
+dp0.8.hn.ob,
+dp0.8.hn.g90,
+dp0.8.hn.gl,
+dp0.8.hn.swc.szc,
+dp0.8.hn.swc.bfc,
+dp0.8.hn.swc.g90c,
+dp0.8.hn.swc.gl,
+dp0.8.hn.swc.obs,
+output="plain")
+# model.table.oct.allsgt0.8 <- summarize_ds_models(dp0.8.hn.bfc ,
+#                      dp0.8.hn.szc ,
+#                      # dp0.8.hn.szc2,
+#                      dp0.8.hn.g90 ,
+#                      dp0.8.hn.g90y,
+#                      dp0.8.hn.g45y,
+#                      dp0.8.hn.sw  ,
+#                      dp0.8.hn.swc  ,
+#                      dp0.8.hn.swc2  ,
+#                      dp0.8.hn.ob  ,
+#                      
+#                      dp0.8.hn.g90c,
+#                      dp0.8.hn.g45c,
+#                      dp0.8.un,
+#                      dp0.8.hn     ,
+#                      dp0.8.hr     ,
+#                      # dp0.8.hn.swc..obs,
+#                      # dp0.8.hn.swc.g45c    ,
+#                      # dp0.8.hn.swc.g45c.bfc,
+#                      # dp0.8.hn.swc.g45c.szc,
+#                      # dp0.8.hn.swc..g45c,
+#                      output="plain")
+
+dp <- df.dp %>% dplyr::select(Region.Label,
+                Sample.Label,
+                distance,
+                Species,
+                size = Group_Size,
+                Glare90,
+                Clumped_Swell)
+# find transects with no sightings and create NA distance rows
+obs <- full_join(dp, effort) #%>% #left_join(reg) %>% 
+
+dp0.8.hn.swc.g90c <- ds(data=obs, truncation=0.8, key="hn", formula=~Clumped_Swell+Glare90) # swell y/n, glare mild/none or severe
+# summary(hn.sw.gl0.9)
+
+# encounter rate and group size
+er <- dp0.8.hn.swc.g90c$dht$individuals$summary[c(1:10),c(1,5,7,9,10)]  %>% 
+  transmute(Season=Region,
+            n     =round(n,     digits=0), 
+            ER    =round(ER,    digits=2),
+            cv.ER =round(cv.ER, digits=2),
+            GS=round(mean.size, digits=2))
+# abundance
+Nhat_t <- dp0.8.hn.swc.g90c$dht$individuals$N[c(1:10),c(1,2,4,5,6)] %>% 
+  transmute(Season=Label,
+            N=    round(Estimate,digits=0), 
+            cv.N= round(cv,      digits=2),
+            L95.N=round(lcl,     digits=0),
+            U95.N=round(ucl,     digits=0))
+# density
+d <- dp0.8.hn.swc.g90c$dht$individuals$D[c(1:10),c(1,2,5,6)] %>% 
+  transmute(Season=Label,
+            D =    round(Estimate*25,digits=2), # *25 cuz density=indivs/25km^2
+            # cv.D = round(cv,         digits=2),
+            L95.D= round(lcl*25,     digits=2),
+            U95.D= round(ucl*25,     digits=2))
+
+ab_dp <- full_join(er, Nhat_t) %>% full_join(d) %>% tibble::as_tibble()  %>% dplyr::select(1:6,8:12,7) 
+  # mutate_if(is.numeric, round, digits = 2) 
+# ab_dp_data <- ab_dp[order(ab_dp$N),]
+```
 
 ```{r df-tab-dp}
-sp="Dall's porpoise"
 model.table.dp <- summarize_ds_models(
-hn.swc.gl0.9,
-hn.v0.9     ,
-hn.bfc0.9   ,
-hn.swc0.9    ,
-hn.gl0.9    ,
-hn.0.9      ,
-un.0.9      ,
-hr.swc.szc0.9,
-hr.szc0.9   ,
-output="plain") %>% tibble::as_tibble()  %>% 
+  dp0.8.hn.swc         ,
+  dp0.8.hn.swc.g90c    ,
+  dp0.8.un,
+  dp0.8.hn.g90c,
+dp0.8.hn,
+  output="plain") %>% tibble::as_tibble()  %>% 
   rename("SE (Average detect.)"="se(Average detectability)",
          "Average detect."="Average detectability",
          "CvM p-value"="C-vM $p$-value") %>% 
-  mutate(Formula=gsub("Clumped_","",Formula),
-         Formula=gsub("Group_Size", "Group Size", Formula)) %>% dplyr::select(-Model)
+  mutate(Formula=gsub("Clumped_","",Formula)) %>% dplyr::select(-Model)
 
 model.table.dp$Formula <- gsub("Vis","Visibility",model.table.dp$Formula)
 
-pdf <- knitr:::is_latex_output()
+# pdf <- knitr:::is_latex_output()
 model.table.dp %>%
   csas_table(
     
     escape = FALSE, font_size=9,
              align = c("l","r","r","r","r","r"), digits=2,  longtable = F,
-  caption = paste("Dall's porpoise detection function models; truncation distance=0.9 km. Comparison among models with strong support (i.e. delta AIC less than five). Key function, Formula=covariates in model, CvM p-value=Cramer-von-Mises test p-value, Average detect.=average detectability, SE(Average detect.)=standard error of the average detectability. Delta AIC= difference in AIC from the top performing model.")) %>%
+  caption = paste("Dall's porpoise detection function models; truncation distance=0.8 km. Comparison among models with strong support (i.e. top performing model plus the two with lowest delta AIC). Key function, Formula=covariates in model, CvM p-value=Cramer-von-Mises test p-value, Average detect.=average detectability, SE(Average detect.)=standard error of the average detectability. Delta AIC= difference in AIC from the top performing model.")) %>%
   kableExtra::column_spec(c(1:6), width = c("1.6in", "1.2in",".7in",".7in","0.7in",".7in"))
 
 ```
 
-(ref:cap-ab-hw) Humpback whale abundance estimates. n=number of groups sighted, ER=encounter rate (per km), cv.ER=coefficient of variation of the encounter rate, GS=estimated group size, N=estimated abundance, cv.N=coefficient of variation of the abundance estimates, D=estimated density (per 25 km^2^), cv.D = coefficient of variation of the density estimates, L95 and U95=lower and upper bounds of a log-normal 95\% confidence interval.
+(ref:cap-ab-hw) Humpback whale abundance estimates. n=number of groups sighted, ER=encounter rate (per km), cv.ER=coefficient of variation of the encounter rate, GS=estimated group size, N=estimated abundance, D=estimated density (per 25 km^2^), L95 and U95=lower and upper bounds of a log-normal 95\% confidence interval, cv=coefficient of variation of the abundance and density estimates.
 
 ```{r tab-ab-hw}
-names(ab_hw) <- c("Season","n","ER","cv.ER","GS","N","cv.N","L95.N","U95.N","D","cv.D","L95.D","U95.D")
+names(ab_hw) <- c("Season","n","ER","cv.ER","GS","N","L95.N","U95.N","D","L95.D","U95.D","cv")
+names(ab_hw) <- c("SeasonYear","n","ER","cv.ER","GS","N","L95.N","U95.N","D","L95.D","U95.D","cv")
 ab_hw %>% tibble::as_tibble() %>% 
   csas_table(
     
@@ -364,14 +517,15 @@ ab_hw %>% tibble::as_tibble() %>%
     # escape = FALSE,
     longtable = F,
     caption = "(ref:cap-ab-hw)")
-
+write.csv(ab_hw[1:10,], "C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/diff seasons/hw/hw early seasonYear abund.csv", row.names = F)
 #   kableExtra::column_spec(c(1:13), width = rep(".6in",13))
 ```
 
-(ref:cap-ab-hp) Harbour porpoise abundance estimates. n=number of groups sighted, ER=encounter rate (per km), cv.ER=coefficient of variation of the encounter rate, GS=estimated group size, N=estimated abundance, cv.N=coefficient of variation of the abundance estimates, D=estimated density (per 25 km^2^), cv.D = coefficient of variation of the density estimates, L95 and U95=lower and upper bounds of a log-normal 95\% confidence interval.
+(ref:cap-ab-hp) Harbour porpoise abundance estimates. n=number of groups sighted, ER=encounter rate (per km), cv.ER=coefficient of variation of the encounter rate, GS=estimated group size, N=estimated abundance, D=estimated density (per 25 km^2^), L95 and U95=lower and upper bounds of a log-normal 95\% confidence interval, cv=coefficient of variation of the abundance and density estimates.
 
 ```{r tab-ab-hp}
-names(ab_hp) <- c("Season","n","ER","cv.ER","GS","N","cv.N","L95.N","U95.N","D","cv.D","L95.D","U95.D")
+names(ab_hp) <- c("Season","n","ER","cv.ER","GS","N","L95.N","U95.N","D","L95.D","U95.D","cv")
+names(ab_hp) <- c("SeasonYear","n","ER","cv.ER","GS","N","L95.N","U95.N","D","L95.D","U95.D","cv")
 ab_hp %>% tibble::as_tibble()  %>% 
   csas_table(
      
@@ -379,13 +533,15 @@ ab_hp %>% tibble::as_tibble()  %>%
     # escape = T,
     longtable = F,
     caption = "(ref:cap-ab-hp)")
+write.csv(ab_hp[1:10,], "C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/diff seasons/hp/hp early seasonYear abund.csv", row.names = F)
 # 
 ```
 
-(ref:cap-ab-dp) Dall's porpoise abundance estimates. n=number of groups sighted, ER=encounter rate (per km), cv.ER=coefficient of variation of the encounter rate, GS=estimated group size, N=estimated abundance, cv.N=coefficient of variation of the abundance estimates, D=estimated density (per 25 km^2^), cv.D = coefficient of variation of the density estimates, L95 and U95=lower and upper bounds of a log-normal 95\% confidence interval.
+(ref:cap-ab-dp) Dall's porpoise abundance estimates. n=number of groups sighted, ER=encounter rate (per km), cv.ER=coefficient of variation of the encounter rate, GS=estimated group size, N=estimated abundance, D=estimated density (per 25 km^2^), L95 and U95=lower and upper bounds of a log-normal 95\% confidence interval, cv=coefficient of variation of the abundance and density estimates.
 
 ```{r tab-ab-dp}
-names(ab_dp) <- c("Season","n","ER","cv.ER","GS","N","cv.N","L95.N","U95.N","D","cv.D","L95.D","U95.D")
+names(ab_dp) <- c("Season","n","ER","cv.ER","GS","N","L95.N","U95.N","D","L95.D","U95.D","cv")
+names(ab_dp) <- c("SeasonYear","n","ER","cv.ER","GS","N","L95.N","U95.N","D","L95.D","U95.D","cv")
 ab_dp %>% tibble::as_tibble()  %>% 
   csas_table(
      
@@ -393,6 +549,8 @@ ab_dp %>% tibble::as_tibble()  %>%
     # escape = FALSE,
     longtable = F,
     caption = "(ref:cap-ab-dp)")
+write.csv(ab_dp[1:10,], "C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/diff seasons/dp/dp early seasonYear abund.csv", row.names = F)
+
 ```
 
 
@@ -405,10 +563,11 @@ ab_dp %>% tibble::as_tibble()  %>%
 # bc coast for plotting
 dir <- "C:/Users/KeppelE/Documents/CeMoRe/Analysis/cemore_analysis/shapefiles"
 if(!exists("coast")){
-  coast <- sf::st_read(dsn = dir, layer = "BC_coast_UTM9")%>% st_transform(3156) #BC_coast_UTM9  BC_AK_WA_union_polygon 
+  # coast <- sf::st_read(dsn = dir, layer = "BC_AK_WA_union_polygon")%>% st_transform(3156) #BC_coast_UTM9  BC_AK_WA_union_polygon
+  coast <- sf::st_read(dsn = dir, layer = "BC_coast_UTM9")%>% st_transform(3156) #BC_coast_UTM9  BC_AK_WA_union_polygon
 }
 
-if(!exists("ss")){
+if(!exists("p_sf")){
 ss <- rast("C:/users/keppele/documents/cemore/analysis/cemore_analysis/required shapefiles/SS_Bathymetry.tif")
 # pe <- as.polygons(ext(ss))
 pr <- as.polygons(ss > -Inf)
@@ -441,11 +600,11 @@ if(!exists("survey_area")){
   canada_shp %<>% st_cast("MULTILINESTRING")
 }
 
-w <- data.frame(
-  lat1=49+17/60,
-  long1=-122-57/60)
-w = st_as_sf(w, coords = c("long1","lat1"), remove = FALSE, crs=4326) %>% st_transform(3156)
-w$TextString <- "Westridge\nMarine\nTerminal"
+# w <- data.frame(
+#   lat1=49+17/60,
+#   long1=-122-57/60)
+# w = st_as_sf(w, coords = c("long1","lat1"), remove = FALSE, crs=4326) %>% st_transform(3156)
+# w$TextString <- "Westridge\nMarine\nTerminal"
 
 # if(!exists("d")){
 # d <- st_read(dsn = x, layer = "less_than_5m") %>% st_transform(crs = 4326)
@@ -493,14 +652,14 @@ study_area <- ggplot() +
   geom_sf(aes(alpha = "Salish\nSea"), stroke=3,data = p_sf, fill=bl, colour=bl) +
   scale_alpha_manual(values=1)+
   geom_sf(data = tss, aes(fill = "Traffic\nSeparation\nScheme"), colour=RColorBrewer::brewer.pal(9,"Oranges")[3]) +
-  geom_sf(data = survey_area, aes(colour = "Full\nStudy\nArea"),
-          fill=NA,alpha=0.3)+
-  geom_sf_pattern(data = survey_can, fill = NA, colour=NA, aes(pattern_fill = "Cdn\nStudy\nArea"),
+  # geom_sf(data = survey_area, aes(colour = "Full\nStudy\nArea"),
+  #         fill=NA,alpha=0.3)+
+  geom_sf_pattern(data = survey_can, fill = NA, colour='grey50', size=2,aes(pattern_fill = "Study\nArea"),
                   pattern_spacing = 0.02, pattern = "stripe", pattern_size = 0.05)+
   coord_fixed(ratio = 1/2)+
   geom_sf(data = canada_shp, aes(linetype = "Can-US\nborder"), fill=NA,colour="red") +
 
-  scale_colour_manual(values = 'grey50') +
+  # scale_colour_manual(values = 'grey50') +
   scale_fill_manual(values = RColorBrewer::brewer.pal(9,"Oranges")[3]) +
   scale_pattern_fill_manual(values = 'grey70') +
   scale_linetype_manual(values = c(5)) +
@@ -509,24 +668,25 @@ study_area <- ggplot() +
          colour = guide_legend(order =2),
          pattern_fill =guide_legend(order=3),
          linetype = guide_legend(title = NULL, order =4),
-         shape=guide_legend(title=NULL, order=5),
-         alpha=guide_legend(title=NULL, order=6)) +
+         # shape=guide_legend(title=NULL, order=5),
+         alpha=guide_legend(title=NULL, order=5)) +
   theme(legend.position = "bottom",
         legend.text = element_text(size=fig_legend_size),
         legend.key = element_blank(),
-        legend.spacing = unit(c(-0.4,-0.4,-0.3,-0.4,0), "lines"),
+        legend.spacing = unit(c(-0.4,-0.3,-0.4), "lines"),
         plot.margin = unit(c(-0.2,-1,0,-1,0), "cm"),
         axis.text=element_text(size=fig_axis_size)
   ) +
   geom_sf(data = coast_file, stroke = 0.0, fill = "light yellow", colour = "grey 60") +
-  geom_sf(data=w,aes(shape=TextString),size=3)+
+  # geom_sf(data=w,aes(shape=TextString),size=3)+
   geom_sf_text(data = locations, aes(label = TextString,
                                      angle = Angle),
                nudge_x = locations$XOffset,
                nudge_y = locations$YOffset,
-               size = 4,
-               colour="black",
-               fontface="bold")+
+               size = 3,
+               colour="black"
+               # ,fontface="bold"
+               )+
   coord+
   ylab("")+xlab("")
 #--- trying to make legend at bottom to make image larger
@@ -542,127 +702,196 @@ ggsave(paste0("knitr-figs-pdf/","study_area.png"),plot=study_area)
 
 \newpage
 
-```{r plot-study-area, fig.width=12,fig.cap="Study area, highlighting the inbound and outbound shipping lanes (traffic separation scheme, TSS), the full study area, and the Canadian portions of the study area surveyed to date."}  
+```{r plot-study-area, fig.width=12,fig.cap="Study area, highlighting the inbound and outbound shipping lanes (traffic separation scheme, TSS), and the study area."}  
   knitr::include_graphics(paste0("knitr-figs-pdf/","study_area.png"))
 ```
 
 ```{r seasonal-track,results='hide'}
 par(mar=c(0,0,0,0))
-p <- suppressMessages(plot_survey(Save = F,
-                                  data.source="cemore",
-                                  border = T,
-                                  single_survey = F,
-                                  incidentals <-  F,
-                                  hydrophone <- F,
-                                  plot_effort = T, # T/F
-                                  plot_sgt = F,
-                                  effort_data = all_effort_lines,
-                                  season=  T,
-                                  
-                                  N=T,
-                                  km=T,
-                                  depth=F))
-suppressMessages(ggsave("knitr-figs-pdf/seasonal_track.png",p))
+# png("knitr-figs-pdf/test.png")
+# p <-
+  suppressMessages(plot_survey(
+  data=all_ap_sf,
+  # Save = T,
+  # file_name = "cemore_seasonYear_effort_to 2022_oct.png",
+  data.source="cemore",
+  border = T,
+  single_survey = F,
+  incidentals <-  F,
+  hydrophone <- F,
+  plot_effort = T, # T/F
+  plot_sgt = F,
+  effort_data = all_effort_lines,
+  season=  T,
+  
+  N=T,
+  km=T,
+  depth=F,
+  by_seasonYear=T,
+  colour_month=T,
+  leg.pos = "right"))
+# dev.off()
+  suppressMessages(ggsave("knitr-figs-pdf/seasonal_track.png"))
 plot_crop("knitr-figs-pdf/seasonal_track.png", quiet=T)
 ```
 
 
-```{r plot-seasonal-track, echo=F,fig.width=12, fig.cap="Realized seasonal survey effort from September 2020 to February 2022. Number of monthly surveys conducted and total realized effort in km displayed by season. Winter = January through March, spring = April through June, summer = July through September, fall = October through December."}
+```{r plot-seasonal-track, echo=F,fig.width=12, fig.cap="Realized seasonal survey effort from September 2020 to October 2022. Number of monthly surveys conducted and total realized effort in km displayed by season. Winter = January through March, spring = April through June, summer = July through September, fall = October through December."}
 knitr::include_graphics("knitr-figs-pdf/seasonal_track.png")
 ```
 
 ```{r plot-sp-monthly, echo=F}
-plot_sp_monthly <- function(species=sp,
-                            sightings_data=all_ap_sf,
-                            effort_data=all_effort_lines){
-  ap_sf <- sightings_data %>% filter(Species %like% species)
-  ap_sf$Species %<>% droplevels()
-  # to order legend symbols consistently
-  sp <- unique(c(levels(ap_sf$Species)))
+# plot_sp_monthly <- function(species=sp,
+#                             sightings_data=all_ap_sf,
+#                             effort_data=all_effort_lines){
+#   ap_sf <- sightings_data %>% filter(Species %like% species)
+#   ap_sf$Species %<>% droplevels()
+#   # to order legend symbols consistently
+#   sp <- unique(c(levels(ap_sf$Species)))
+# 
+#   # create text dataframe for labels
+#   tx <- effort_data %>%
+#     as.data.frame() %>%
+#     dplyr::group_by(month_abb) %>%
+#     dplyr::summarise(dist = round(sum(length_km),0),
+#                      lab=list(unique(year))) %>%
+#     mutate(lab=Map(
+#       function(x,y) paste(x, paste(y,collapse=", "),sep = " "),
+#       month_abb,lab) %>%
+#         unlist()) %>%
+#     arrange(month_abb) %>%
+#     mutate(lab= factor(lab,levels=c(unique(.$lab),"Dec - 0 years")))%>%
+#     as.data.frame()
+#   tx[nrow(tx) + 1,] <- c("Dec",0, "Dec - 0 years")
+# 
+#   # add labels to spatial data frames for facetting
+#   effort_lines <- sp::merge(effort_data, tx, by="month_abb")
+#   ap_sf <- sp::merge(ap_sf, tx, by="month_abb")
+#   
+# b <- RColorBrewer::brewer.pal (11,"RdYlBu")[11]
+# g <- RColorBrewer::brewer.pal (11,"PRGn")[10]
+# y <- RColorBrewer::brewer.pal (9,"YlOrBr")[5]
+# br <- RColorBrewer::brewer.pal (9,"RdGy")[1]
+# seasons <- c(b,g,y,br)
+#   
+#   p <- base_map +
+#     geom_sf(data = effort_lines, stroke = 0.25,colour="grey50")+
+#     geom_sf(data = ap_sf, stroke = 0.01, aes(colour=season, size = Clumped_Group_Size)) +#
+#     scale_colour_manual(values=seasons)+
+#     scale_size_manual(values = c(1.5,2,2.5,3), name = "Number of Individuals") +
+#     coord +
+#       guides(colour= "none") +
+#     # ggtitle(paste0("Monthly ", sp, " sightings")) +
+#     theme(legend.position = "bottom",
+#           legend.key = element_blank(),
+#           # legend.margin = margin(0),
+#           # legend.key.size = unit(0.1,"cm"),
+#           legend.text = element_text(size=fig_legend_size),
+#           axis.text=element_text(size=fig_axis_size),
+#           axis.text.x=element_text(angle=90),
+#           plot.margin = unit(c(0,0,0,0), "cm"),
+#   panel.background = element_blank(),
+#   panel.border = element_blank())+
+#     scale_x_continuous(breaks = seq(from = -123, to = -125.5, by = -1)) +
+#     scale_y_continuous(breaks = seq(from = 48.2, to = 49.4, by = 0.4), limits = c(48.0,49.5)) +
+#     geom_text(data = tx, aes(x = -124.3, y = 48.8, label = paste0(dist, " km")), size = 3) +
+# 
+#     facet_wrap(~lab, drop = F, ncol=3)
+#   
+#     # ggdraw(p) +
+#     # draw_label("Winter", x = 0, y = 0.87, hjust = 0, vjust = 0,size=10, angle=90)+
+#     # draw_label("Spring", x = 0, y = 0.65, hjust = 0, vjust = 0,size=10, angle=90)+
+#     # draw_label("Summer", x = 0, y = 0.45, hjust = 0, vjust = 0,size=10, angle=90)+
+#     # draw_label("Fall", x   = 0, y = 0.24, hjust = 0, vjust = 0,size=10, angle=90)
+# 
+#   ggsave(paste0("knitr-figs-pdf/",sp,"_monthly_stg_map.png"),plot=p)
+#   plot_crop(paste0("knitr-figs-pdf/",sp,"_monthly_stg_map.png"))
+#   knitr::include_graphics(paste0("knitr-figs-pdf/",sp,"_monthly_stg_map.png"))
+# }
 
-  # create text dataframe for labels
-  tx <- effort_data %>%
-    as.data.frame() %>%
-    dplyr::group_by(month_abb) %>%
-    dplyr::summarise(dist = round(sum(length_km),0),
-                     lab=list(unique(year))) %>%
-    mutate(lab=Map(
-      function(x,y) paste(x, paste(y,collapse=", "),sep = " "),
-      month_abb,lab) %>%
-        unlist()) %>%
-    arrange(month_abb) %>%
-    mutate(lab= factor(lab,levels=c(unique(.$lab),"Dec - 0 years")))%>%
-    as.data.frame()
-  tx[nrow(tx) + 1,] <- c("Dec",0, "Dec - 0 years")
-
-  # add labels to spatial data frames for facetting
-  effort_lines <- sp::merge(effort_data, tx, by="month_abb")
-  ap_sf <- sp::merge(ap_sf, tx, by="month_abb")
-  
-b <- RColorBrewer::brewer.pal (11,"RdYlBu")[11]
-g <- RColorBrewer::brewer.pal (11,"PRGn")[10]
-y <- RColorBrewer::brewer.pal (9,"YlOrBr")[5]
-br <- RColorBrewer::brewer.pal (9,"RdGy")[1]
-seasons <- c(b,g,y,br)
-  
-  p <- base_map +
-    geom_sf(data = effort_lines, stroke = 0.25,colour="grey50")+
-    geom_sf(data = ap_sf, stroke = 0.01, aes(colour=season, size = Clumped_Group_Size)) +#
-    scale_colour_manual(values=seasons)+
-    scale_size_manual(values = c(1.5,2,2.5,3), name = "Number of Individuals") +
-    coord +
-      guides(colour= "none") +
-    # ggtitle(paste0("Monthly ", sp, " sightings")) +
-    theme(legend.position = "bottom",
-          legend.key = element_blank(),
-          # legend.margin = margin(0),
-          # legend.key.size = unit(0.1,"cm"),
-          legend.text = element_text(size=fig_legend_size),
-          axis.text=element_text(size=fig_axis_size),
-          axis.text.x=element_text(angle=90),
-          plot.margin = unit(c(0,0,0,0), "cm"),
-  panel.background = element_blank(),
-  panel.border = element_blank())+
-    scale_x_continuous(breaks = seq(from = -123, to = -125.5, by = -1)) +
-    scale_y_continuous(breaks = seq(from = 48.2, to = 49.4, by = 0.4), limits = c(48.0,49.5)) +
-    geom_text(data = tx, aes(x = -124.3, y = 48.8, label = paste0(dist, " km")), size = 3) +
-
-    facet_wrap(~lab, drop = F, ncol=3)
-  
-    # ggdraw(p) +
-    # draw_label("Winter", x = 0, y = 0.87, hjust = 0, vjust = 0,size=10, angle=90)+
-    # draw_label("Spring", x = 0, y = 0.65, hjust = 0, vjust = 0,size=10, angle=90)+
-    # draw_label("Summer", x = 0, y = 0.45, hjust = 0, vjust = 0,size=10, angle=90)+
-    # draw_label("Fall", x   = 0, y = 0.24, hjust = 0, vjust = 0,size=10, angle=90)
-
-  ggsave(paste0("knitr-figs-pdf/",sp,"_monthly_stg_map.png"),plot=p)
-  plot_crop(paste0("knitr-figs-pdf/",sp,"_monthly_stg_map.png"))
-  knitr::include_graphics(paste0("knitr-figs-pdf/",sp,"_monthly_stg_map.png"))
-}
 ```
 
 
-```{r monthly-hw, echo=FALSE,fig.width=12,fig.cap="Humpback whale on-effort sightings and realized survey effort by month from September 2020 to February 2022. No surveys have yet been conducted in December. Monthly data are pooled over years. Relative point size indicates group size for each sighting. Total realized effort in km displayed by month. Months are grouped into seasons across rows. Blue = winter, green = spring, orange = summer, and red = fall."}
+```{r monthly-hw, echo=FALSE,fig.width=12,fig.cap="Humpback whale on-effort sightings and realized survey effort by month from September 2020 to October 2022. No surveys have yet been conducted in December. Monthly data are pooled over years. Relative point size indicates group size for each sighting. Total realized effort in km displayed by month. Months are grouped into seasons across rows. Blue = winter, green = spring, orange = summer, and red = fall."}
 sp <- "humpback"
-plot_sp_monthly()
+ plot_survey(
+  Save=F,
+  # high_res=T,
+  # file_name = "output_maps_cemore/seasonYear_hw.png",
+  data=ap_sf2022,
+  border=F,
+  single_survey=F,
+  plot_sgt=T,
+  plot_effort = T,
+  effort_data = effort_lines2022,
+  # show_transit=F,
+  # N=T,
+  # km=T,
+  # depth=T,
+  legend = F,
+  species=sp,
+  season=F,
+  by_seasonYear = T)
+  # ggsave(paste0("knitr-figs-pdf/",sp,"_seasonYear_stg_map.png"))
+  # knitr::include_graphics(paste0("knitr-figs-pdf/sightings_seasonYear_hw_2023apr_black.png"))
+
 ```
 
 
-```{r monthly-hp, echo=FALSE,fig.width=12,fig.cap="Harbour porpoise on-effort sightings and realized survey effort by month from September 2020 to February 2022. No surveys have yet been conducted in December. Monthly data are pooled over years. Relative point size indicates group size for each sighting. Total realized effort in km displayed by month. Months are grouped into seasons across rows. Blue = winter, green = spring, orange = summer, and red = fall."}
+```{r monthly-hp, echo=FALSE,fig.width=12,fig.cap="Harbour porpoise on-effort sightings and realized survey effort by month from September 2020 to October 2022. No surveys have yet been conducted in December. Monthly data are pooled over years. Relative point size indicates group size for each sighting. Total realized effort in km displayed by month. Months are grouped into seasons across rows. Blue = winter, green = spring, orange = summer, and red = fall."}
 sp <- "harbour porpoise"
-plot_sp_monthly()
+ plot_survey(
+  Save=F,
+  # high_res=T,
+  # file_name = "output_maps_cemore/seasonYear_hw.png",
+  data=ap_sf2022,
+  border=F,
+  single_survey=F,
+  plot_sgt=T,
+  plot_effort = T,
+  effort_data = effort_lines2022,
+  # show_transit=F,
+  # N=T,
+  # km=T,
+  # depth=T,
+  legend = F,
+  species=sp,
+  season=F,
+  by_seasonYear = T)
+  # ggsave(paste0("knitr-figs-pdf/",sp,"_seasonYear_stg_map.png"))knitr::include_graphics(paste0("knitr-figs-pdf/sightings_seasonYear_hw_2023apr_black.png"))
+# knitr::include_graphics(paste0("knitr-figs-pdf/sightings_seasonYear_hp_2023apr_black.png"))
+
 ```
 
 
-```{r monthly-dp, echo=FALSE,fig.width=12,fig.cap="Dall's porpoise on-effort sightings and realized survey effort by month from September 2020 to February 2022. No surveys have yet been conducted in December. Monthly data are pooled over years. Relative point size indicates group size for each sighting. Total realized effort in km displayed by month. Months are grouped into seasons across rows. Blue = winter, green = spring, orange = summer, and red = fall."}
+```{r monthly-dp, echo=FALSE,fig.width=12,fig.cap="Dall's porpoise on-effort sightings and realized survey effort by month from September 2020 to October 2022. No surveys have yet been conducted in December. Monthly data are pooled over years. Relative point size indicates group size for each sighting. Total realized effort in km displayed by month. Months are grouped into seasons across rows. Blue = winter, green = spring, orange = summer, and red = fall."}
 sp <- "Dall's porpoise"
-plot_sp_monthly()
+ plot_survey(
+  Save=F,
+  # high_res=T,
+  # file_name = "output_maps_cemore/seasonYear_hw.png",
+  data=ap_sf2022,
+  border=F,
+  single_survey=F,
+  plot_sgt=T,
+  plot_effort = T,
+  effort_data = effort_lines2022,
+  # show_transit=F,
+  # N=T,
+  # km=T,
+  # depth=T,
+  legend = F,
+  species=sp,
+  season=F,
+  by_seasonYear = T)
+  # ggsave(paste0("knitr-figs-pdf/",sp,"_seasonYear_stg_map.png"))
+  # knitr::include_graphics(paste0("knitr-figs-pdf/sightings_seasonYear_hw_2023apr_black.png"))plot_sp_monthly()
 ```
 
 
 ```{r non-target-sp, results='hide'}
  lev <- levels(all_ap_sf$Species) %>% first_up()
-x <- get_all_raw_sgt()%>%
+x <- get_all_raw_sgt(single=F)%>%
   mutate(Species=tolower(Species)) %>% 
   mutate(Species=first_up(Species)) %>% 
   mutate(Species= gsub(pattern="bigg's",replacement="Bigg's",.$Species), Species=factor(Species, lev)) %>%
@@ -681,8 +910,8 @@ x <- get_all_raw_sgt()%>%
   dplyr::filter(!month==1 | !Species=="Killer whale - Bigg's")
 x$Species %<>% droplevels()
 
-fin <- data.frame(month=NA,Species="Fin whale", Group_Size=1, lat=48.432627, lon=-124.387090) %>% st_as_sf(coords=c("lon","lat"), crs=4326) 
-x <- rbind(x,fin)
+# fin <- data.frame(month=NA,Species="Fin whale", Group_Size=1, lat=48.432627, lon=-124.387090) %>% st_as_sf(coords=c("lon","lat"), crs=4326) 
+# x <- rbind(x,fin)
 
 # to order legend symbols consistently
 sp <- levels(x$Species)
@@ -741,59 +970,131 @@ knitr::include_graphics("knitr-figs-pdf/non_target.png")
 ```
 
 ```{r gof-hw,fig.keep = "none", include=F}
-gof_hw <- (gof_ds(un2))
+gof_hw <- (gof_ds(hw1.5.hn.v))
 ```
 
-```{r plot-df-hw, fig.cap="a) Histogram of perpendicular sighting distances of humpback whales with the selected detection function model (uniform key function with cosine adjustment of order 1, 2). The key function of the model, effective strip half-width (esw) and number of individual humpback whales sighted (N, within truncation of 2.0 km) are included. The dotted line indicates where estimated detection probability is 0.15. b) Q-Q plot (fitted cumulative distribution (cdf) against empirical cdf) for the selected detection function model for assessment of goodness of fit."}
+```{r plot-df-hw, fig.cap="a) Histogram of perpendicular sighting distances of humpback whales with the selected detection function model (half-normal key function with covariates of visibility and glare mild/none or severe to +/- 90 degrees). The key function of the model, effective strip half-width (esw) and number of individual humpback whales sighted (N, within truncation of 1.5 km) are included. The dotted line indicates where estimated detection probability is 0.15. b) Q-Q plot (fitted cumulative distribution (cdf) against empirical cdf) for the selected detection function model for assessment of goodness of fit."}
 
 cols <- NULL
 par(mfrow=c(1,2))
-  plot_df("humpback whale", un2,showpoints=F)
+  plot_df("humpback whale", hw1.5.hn.v,showpoints=F)
   usr <- par("usr")   # save old user/default/system coordinates
   par(usr = c(0, 1, 0, 1)) # new relative user coordinates
   text(x=0.95,y=1,label="a", adj=c(1,1))
   par(usr = usr)
 
-  invisible(gof_ds(un2))
+  invisible(gof_ds(hw1.5.hn.v))
   usr <- par("usr")   # save old user/default/system coordinates
   par(usr = c(0, 1, 0, 1)) # new relative user coordinates
   text(x=0.95,y=1,label="b", adj=c(1,1))
   par(usr = usr) # restore original user coordinates
 ```
 
-<!-- ```{r violin-hw-vis, fig.cap="Distribution of perpendicular distances of humpback whale detections at visibility categories of good/excellent and moderate/poor."} -->
-<!-- hw <- all_ap_sf %>% dplyr::filter(Species=="humpback whale",distance<2) -->
-<!-- hw_sum2 <- hw %>% data.frame() %>% count(Clumped_Vis) -->
+```{r violin-hw-vis, fig.cap="Distribution of perpendicular distances of humpback whale detections at visibility categories of good/excellent/moderate, and poor."}
+hw1.5 <- all_ap_sf %>% dplyr::filter(Species=="humpback whale",distance<1.5)
+hw_sum_v <- hw1.5 %>% data.frame() %>% count(Clumped_Visibility)
 
-<!-- ggplot(data = hw, aes(x=Clumped_Vis, y=distance)) + -->
+ggplot(data = hw1.5, aes(x=Clumped_Visibility, y=distance)) +
+  geom_violin()+
+  # stat_summary(fun=mean, geom="pointrange", shape=23, size=2)
+  geom_boxplot(width=0.1)+
+  geom_text(data=hw_sum_v,
+            aes(Clumped_Visibility,max(hw1.5$distance)+(0.05*max(hw1.5$distance)),label=n,size=0.1),size=3,vjust = -0.5)+
+  # stat_summary(fun.data=mean_sdl, geom="pointrange")+
+  ylab("Perpendicular sighting distance (km)")+
+  xlab("Visibility (Good/Moderate vs. Poor)")
+#------------------------------------------------------------
+
+hw_sum_gl <- hw1.5 %>% data.frame() %>% count(Glare90)
+
+ggplot(data = hw1.5, aes(x=Glare90, y=distance)) +
+  geom_violin()+
+  # stat_summary(fun=mean, geom="pointrange", shape=23, size=2)
+  geom_boxplot(width=0.1)+
+  geom_text(data=hw_sum_gl,
+            aes(Glare90,max(hw1.5$distance)+(0.05*max(hw1.5$distance)),label=n,size=0.1),size=3,vjust = -0.5)+
+  # stat_summary(fun.data=mean_sdl, geom="pointrange")+
+  ylab("Perpendicular sighting distance (km)")+
+  xlab("Glare90")
+plot(hw1.5$glare_swath,    hw1.5$distance)
+plot(hw1.5$glare_swath45,  hw1.5$distance)
+#------------------------------------------------------------
+
+hw1.5 %<>% mutate(Beaufort=as.character(Beaufort))
+hw_sum_bf <- hw1.5 %>% data.frame() %>% count(Beaufort)
+
+ggplot(data = hw1.5, aes(x=Beaufort, y=distance)) +
+  geom_violin()+
+  # stat_summary(fun=mean, geom="pointrange", shape=23, size=2)
+  geom_boxplot(width=0.1)+
+  geom_text(data=hw_sum_bf,
+            aes(Beaufort,max(hw1.5$distance)+(0.05*max(hw1.5$distance)),label=n,size=0.1),size=3,vjust = -0.5)+
+  # stat_summary(fun.data=mean_sdl, geom="pointrange")+
+  ylab("Perpendicular sighting distance (km)")+
+  xlab("Beaufort")
+
+
+#------------------------------------------------------------
+
+hw_sum_bfc <- hw1.5 %>% data.frame() %>% count(Clumped_Beaufort)
+
+ggplot(data = hw1.5, aes(x=Clumped_Beaufort, y=distance)) +
+  geom_violin()+
+  # stat_summary(fun=mean, geom="pointrange", shape=23, size=2)
+  geom_boxplot(width=0.1)+
+  geom_text(data=hw_sum_bfc,
+            aes(Clumped_Beaufort,max(hw1.5$distance)+(0.05*max(hw1.5$distance)),label=n,size=0.1),size=3,vjust = -0.5)+
+  # stat_summary(fun.data=mean_sdl, geom="pointrange")+
+  ylab("Perpendicular sighting distance (km)")+
+  xlab("Clumped_Beaufort")
+#------------------------------------------------------------
+
+hw_sum_szc <- hw1.5 %>% data.frame() %>% count(Clumped_Group_Size)
+
+ggplot(data = hw1.5, aes(x=Clumped_Group_Size, y=distance)) +
+  geom_violin()+
+  # stat_summary(fun=mean, geom="pointrange", shape=23, size=2)
+  geom_boxplot(width=0.1)+
+  geom_text(data=hw_sum_szc,
+            aes(Clumped_Group_Size,max(hw1.5$distance)+(0.05*max(hw1.5$distance)),label=n,size=0.1),size=3,vjust = -0.5)+
+  # stat_summary(fun.data=mean_sdl, geom="pointrange")+
+  ylab("Perpendicular sighting distance (km)")+
+  xlab("Clumped_Group_Size")
+```
+
+<!-- ```{r violin-hw-gl, fig.cap="Distribution of perpendicular distances of humpback whale detections at glare categories of mild/none and severe to +/-90 degrees."} -->
+<!-- hw1.5 <- all_ap_sf %>% dplyr::filter(Species=="humpback whale",distance<1.5) -->
+<!-- hw_sum_gl90c <- hw1.5 %>% data.frame() %>% count(Glare90) # glare clumped as none/mild or severe -->
+
+<!-- ggplot(data = hw1.5, aes(x=Glare90, y=distance)) + -->
 <!--   geom_violin()+ -->
 <!--   # stat_summary(fun=mean, geom="pointrange", shape=23, size=2) -->
 <!--   geom_boxplot(width=0.1)+ -->
-<!--   geom_text(data=hw_sum2, -->
-<!--             aes(Clumped_Vis,max(hw$distance)+(0.05*max(hw$distance)),label=n,size=0.1),size=3,vjust = -0.5)+ -->
+<!--   geom_text(data=hw_sum_gl90c, -->
+<!--             aes(Glare90,max(hw1.5$distance)+(0.05*max(hw1.5$distance)),label=n,size=0.1),size=3,vjust = -0.5)+ -->
 <!--   # stat_summary(fun.data=mean_sdl, geom="pointrange")+ -->
 <!--   ylab("Perpendicular sighting distance (km)")+ -->
-<!--   xlab("Visibility (Good/Excellent, Moderate/Poor)") -->
+<!--   xlab("Glare (Mild/None or Severe)") -->
+
 <!-- ``` -->
 
 
-
 ```{r gof-hp,fig.keep = "none", include=F}
-gof_hp <- (gof_ds(hn.bfc.obs0.7))
+gof_hp <- (gof_ds(hp.0.65.hn.bfc.obs))
 ```
 
-```{r plot-df-hp, fig.cap="a) Histogram of perpendicular sighting distances of harbour porpoises with the selected detection function model (half-normal key function with Beaufort and observer as covariates). The key function of the model, effective strip half-width (esw) and number of individual harbour porpoises sighted (N, within truncation of 0.7 km) are included. The dotted line indicates where estimated detection probability is 0.15.  b) Q-Q plot (fitted cumulative distribution (cdf) against empirical cdf) for the selected detection function model for assessment of goodness of fit."}
+```{r plot-df-hp, fig.cap="a) Histogram of perpendicular sighting distances of harbour porpoises with the selected detection function model (half-normal key function with Beaufort sea state (0-1, 2, 3+) and observer as covariates). The key function of the model, effective strip half-width (esw) and number of individual harbour porpoises sighted (N, within truncation of 0.65 km) are included. The dotted line indicates where estimated detection probability is 0.15.  b) Q-Q plot (fitted cumulative distribution (cdf) against empirical cdf) for the selected detection function model for assessment of goodness of fit."}
 
 cols <- NULL
 par(mfrow=c(1,2))
 
-plot_df("harbour porpoise",hn.bfc.obs0.7,showpoints=F, bins=15) #breaks=seq(0,0.7,0.05)
+plot_df("harbour porpoise",hp.0.65.hn.bfc.obs,showpoints=F, bins=15) #breaks=seq(0,0.7,0.05)
 usr <- par("usr")   # save old user/default/system coordinates
 par(usr = c(0, 1, 0, 1)) # new relative user coordinates
 text(x=0.95,y=1,label="a", adj=c(1,1))
 par(usr = usr)
 
-invisible(gof_ds(hn.bfc.obs0.7))
+invisible(gof_ds(hp.0.65.hn.bfc.obs))
 usr <- par("usr")   # save old user/default/system coordinates
 par(usr = c(0, 1, 0, 1)) # new relative user coordinates
 text(x=0.95,y=1,label="b", adj=c(1,1))
@@ -802,17 +1103,17 @@ par(usr = usr)  # restore original user coordinates
 ```
 
 
-```{r violin-hp-bf, fig.cap="Distribution of perpendicular distances of harbour porpoise detections at Beaufort sea state categories of 0-1, 2, and 3+. Porpoise sightings are truncated at a perpendicular distance of 0.7 km. The shape of the violin plots indicate the distribution of the data; i.e. wider sections indicate areas of higher probability that the perpendicular distances will fall in these ranges. Boxplots within the violin plots indicate the median and interquartile ranges of perpendicular distances. The number of harbour porpoise detections at each Beaufort category are included at the top of each plot."}
-hp <- all_ap_sf %>% filter(Species=="harbour porpoise",distance<0.7)
+```{r violin-hp-bf, fig.cap="Distribution of perpendicular distances of harbour porpoise detections at Beaufort sea state categories of 0-1, 2, and 3+. Harbour porpoise sightings are truncated at a perpendicular distance of 0.65 km. The shape of the violin plots indicate the distribution of the data; i.e. wider sections indicate areas of higher probability that the perpendicular distances will fall in these ranges. Boxplots within the violin plots indicate the median and interquartile ranges of perpendicular distances. The number of harbour porpoise detections at each Beaufort category are included at the top of each plot."}
+hp0.65 <- all_ap_sf %>% filter(Species=="harbour porpoise",distance<0.65)
 
-hp_sum <- hp %>% data.frame() %>% count(Clumped_Beaufort)
+hp_sum <- hp0.65 %>% data.frame() %>% count(Clumped_Beaufort)
 
 # par(mfrow=c(1,2))
-ggplot(data = hp, aes(Clumped_Beaufort, distance)) +
+ggplot(data = hp0.65, aes(Clumped_Beaufort, distance)) +
   geom_violin() +
   geom_boxplot(width=0.1)+
   geom_text(data=hp_sum,
-            aes(Clumped_Beaufort,max(hp$distance)-(0.005*max(hp$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5)+
+            aes(Clumped_Beaufort,max(hp0.65$distance)-(0.005*max(hp0.65$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5)+
   ylab("Perpendicular sighting distance (km)")+
   xlab("Beaufort sea state (clumped into groups, 0-1, 2, 3+)")+
   theme(axis.text=element_text(size=fig_axis_size),
@@ -820,22 +1121,46 @@ ggplot(data = hp, aes(Clumped_Beaufort, distance)) +
 ```
 
 
-```{r violin-hp-obs, fig.cap="Distribution of perpendicular distances of harbour porpoise detections by unique observer. Porpoise sightings are truncated at a perpendicular distance of 0.7 km. The shape of the violin plots indicate the distribution of the data; i.e. wider sections indicate areas of higher probability that the perpendicular distances will fall in these ranges. Boxplots within the violin plots indicate the median and interquartile ranges of perpendicular distances. The number of harbour porpoise detections by each observer are included at the top of each plot."}
-hp %<>% mutate(Observer=case_when(
+```{r violin-hp-obs, fig.cap="Distribution of perpendicular distances of harbour porpoise detections by unique observer. Harbour porpoise sightings are truncated at a perpendicular distance of 0.65 km. The shape of the violin plots indicate the distribution of the data; i.e. wider sections indicate areas of higher probability that the perpendicular distances will fall in these ranges. Boxplots within the violin plots indicate the median and interquartile ranges of perpendicular distances. The number of harbour porpoise detections by each observer are included at the top of each plot."}
+hp0.65 %<>% mutate(Observer=case_when(
   Observer == "a" ~ "Observer 1",
   Observer == "b" ~ "Observer 2",
   Observer == "c" ~ "Observer 3"
 )) 
 
-hp_sum2 <- hp %>% data.frame() %>% count(Observer)
+hp_sum2 <- hp0.65 %>% data.frame() %>% count(Observer)
 
-ggplot(data = hp, aes(Observer, distance)) +
+ggplot(data = hp0.65, aes(Observer, distance)) +
   geom_violin() +
   geom_boxplot(width=0.1)+
   geom_text(data=hp_sum2,
-            aes(Observer,max(hp$distance)-(0.005*max(hp$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5)+
+            aes(Observer,max(hp0.65$distance)-(0.005*max(hp0.65$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5)+
   ylab("Perpendicular sighting distance (km)")+
-  xlab(NULL)+
+  xlab("Observer")+
+  theme(axis.text=element_text(size=fig_axis_size),
+        axis.title=element_text(size=fig_axis_title_size))
+
+hp_sum3 <- hp0.65 %>% data.frame() %>% count(Clumped_Group_Size2)
+
+ggplot(data = hp0.65, aes(as.character(Clumped_Group_Size2), distance)) +
+  geom_violin() +
+  geom_boxplot(width=0.1)+
+  geom_text(data=hp_sum3,
+            aes(as.character(Clumped_Group_Size2),max(hp0.65$distance)-(0.005*max(hp0.65$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5)+
+  ylab("Perpendicular sighting distance (km)")+
+  xlab("Clumped_Group_Size2")+
+  theme(axis.text=element_text(size=fig_axis_size),
+        axis.title=element_text(size=fig_axis_title_size))
+
+hp_sum4 <- hp0.65 %>% data.frame() %>% count(Visibility)
+
+ggplot(data = hp0.65, aes(as.character(Visibility), distance)) +
+  geom_violin() +
+  geom_boxplot(width=0.1)+
+  geom_text(data=hp_sum4,
+            aes(as.character(Visibility),max(hp0.65$distance)-(0.005*max(hp0.65$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5)+
+  ylab("Perpendicular sighting distance (km)")+
+  xlab("Visibility")+
   theme(axis.text=element_text(size=fig_axis_size),
         axis.title=element_text(size=fig_axis_title_size))
 ```
@@ -861,20 +1186,20 @@ ggplot(data = hp, aes(Observer, distance)) +
 
 
 ```{r gof-dp,fig.keep = "none", include=F}
-gof_dp <- (gof_ds(hn.swc.gl0.9))
+gof_dp <- (gof_ds(dp0.8.hn.swc.g90c))
 ```
 
-```{r plot-df-dp, fig.cap="a) Histogram of perpendicular sighting distances of Dall’s porpoises with the selected detection function model (half-normal key function with swell and glare as covariates). The key function of the model, effective strip half-width (esw) and number of individual Dall’s porpoises sighted (N, within truncation of 0.9 km) are included. The dotted line indicates where estimated detection probability is 0.15. b) Q-Q plot (fitted cumulative distribution (cdf) against empirical cdf) for the selected detection function model for assessment of goodness of fit."}
+```{r plot-df-dp, fig.cap="a) Histogram of perpendicular sighting distances of Dall’s porpoises with the selected detection function model (half-normal key function with interaction between swell presence/absence and glare (mild/none or severe to +/- 90 degrees) as a covariate). The key function of the model, effective strip half-width (esw) and number of individual Dall’s porpoises sighted (N, within truncation of 0.8 km) are included. The dotted line indicates where estimated detection probability is 0.15. b) Q-Q plot (fitted cumulative distribution (cdf) against empirical cdf) for the selected detection function model for assessment of goodness of fit."}
 cols <- NULL
 par(mfrow=c(1,2))
 
-plot_df("Dall\'s porpoise", hn.swc.gl0.9,showpoints=F)
+plot_df("Dall\'s porpoise", dp0.8.hn.swc.g90c,showpoints=F)
 usr <- par("usr")   # save old user/default/system coordinates
 par(usr = c(0, 1, 0, 1)) # new relative user coordinates
 text(x=0.95,y=1,label="a", adj=c(1,1))
 par(usr = usr)
 
-invisible(gof_ds(hn.swc.gl0.9))
+invisible(gof_ds(dp0.8.hn.swc.g90c))
 usr <- par("usr")   # save old user/default/system coordinates
 par(usr = c(0, 1, 0, 1)) # new relative user coordinates
 text(x=0.95,y=1,label="b", adj=c(1,1))
@@ -882,15 +1207,33 @@ par(usr = usr)  # restore original user coordinates
 
 ```
 
-```{r violin-dp-sw, fig.cap="Distribution of perpendicular distances of Dall’s porpoise detections with swell presence/absence. Sightings are truncated at a perpendicular distance of 0.9 km. The shape of the violin plots indicate the distribution of the data; i.e. wider sections indicate areas of higher probability that the perpendicular distances will fall in these ranges. Boxplots within the violin plots indicate the median and interquartile ranges of perpendicular distances. The number of Dall’s porpoise detections in each swell category are included at the top of each plot."}
-dp <- all_ap_sf %>% filter(Species=="Dall's porpoise",distance<0.9)
+```{r violin-dp-sw, fig.cap="Distribution of perpendicular distances of Dall’s porpoise detections with swell presence/absence. Sightings are truncated at a perpendicular distance of 0.8 km. The shape of the violin plots indicate the distribution of the data; i.e. wider sections indicate areas of higher probability that the perpendicular distances will fall in these ranges. Boxplots within the violin plots indicate the median and interquartile ranges of perpendicular distances. The number of Dall’s porpoise detections in each swell category are included at the top of each plot."}
+dp <- all_ap_sf %>% filter(Species=="Dall's porpoise",distance<0.8) %>% 
+  mutate(interaction=case_when(
+    Clumped_Swell == "No swell" & Glare90 == "Mild/None" ~ "No swell & No/Mild glare",
+    Clumped_Swell == "No swell" & Glare90 == "Severe" ~ "No swell & Severe glare",
+    Clumped_Swell == "Swell" & Glare90 == "Mild/None" ~ "Swell & No/Mild glare",
+    Clumped_Swell == "Swell" & Glare90 == "Severe" ~ "Swell & Severe glare"
+  ))
 
-dp_sum <- dp %>% data.frame() %>% count(Clumped_Swell)
+# dp_sum <- dp %>% data.frame() %>% count(swell) # none, low, mod-big
+dp_sum_c <- dp %>% data.frame() %>% count(Clumped_Swell) # y/n
+# dp_sum_c2 <- dp %>% data.frame() %>% count(Clumped_Swell2) # none-low, mod-big
+
+# suppressMessages(ggplot(data = dp, aes(swell, distance))) +
+#   geom_violin() +
+#   geom_boxplot(width=0.1)+
+#   geom_text(data=dp_sum,
+#             aes(swell,max(dp$distance)-(0.005*max(dp$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5) +
+#   ylab("Perpendicular sighting distance (km)")+
+#   xlab(NULL)+
+#   theme(axis.text=element_text(size=fig_axis_size),
+#         axis.title=element_text(size=fig_axis_title_size))
 
 suppressMessages(ggplot(data = dp, aes(Clumped_Swell, distance))) +
   geom_violin() +
   geom_boxplot(width=0.1)+
-  geom_text(data=dp_sum,
+  geom_text(data=dp_sum_c,
             aes(Clumped_Swell,max(dp$distance)-(0.005*max(dp$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5)+
   ylab("Perpendicular sighting distance (km)")+
   xlab(NULL)+
@@ -898,51 +1241,82 @@ suppressMessages(ggplot(data = dp, aes(Clumped_Swell, distance))) +
         axis.title=element_text(size=fig_axis_title_size))
 ```
 
-```{r violin-dp-gl, fig.cap="Distribution of perpendicular distances of Dall’s porpoise detections with glare presence/absence. Sightings are truncated at a perpendicular distance of 0.9 km. The shape of the violin plots indicate the distribution of the data; i.e. wider sections indicate areas of higher probability that the perpendicular distances will fall in these ranges. Boxplots within the violin plots indicate the median and interquartile ranges of perpendicular distances. The number of Dall’s porpoise detections in each glare category are included at the top of each plot."}
-dp <- all_ap_sf %>% filter(Species=="Dall's porpoise",distance<0.9)
-dp %<>% mutate(glare=factor(case_when(
-  glare == "n" ~ "No Glare",
-  glare == "y" ~ "Glare"),
-  levels=c("No Glare", "Glare")
-))
+```{r violin-dp-gl, fig.cap="Distribution of perpendicular distances of Dall’s porpoise detections with glare none/mild or severe to +/- 90 degrees on both port and starboard. Sightings are truncated at a perpendicular distance of 0.8 km. The shape of the violin plots indicate the distribution of the data; i.e. wider sections indicate areas of higher probability that the perpendicular distances will fall in these ranges. Boxplots within the violin plots indicate the median and interquartile ranges of perpendicular distances. The number of Dall’s porpoise detections in each glare category are included at the top of each plot."}
+# dp <- all_ap_sf %>% filter(Species=="Dall's porpoise",distance<0.8)
+# dp %<>% mutate(Glare90=factor(case_when(
+#   Glare90 == "None" ~ "No Glare",
+#   !Glare90 == "None" ~ "Glare"),
+#   levels=c("No Glare", "Glare")
+# ))
 
-dp_sum2 <- dp %>% data.frame() %>% count(glare)
+dp_sum2 <- dp %>% data.frame() %>% count(Glare90)
 
-suppressMessages(ggplot(data = dp, aes(glare, distance))) +
+suppressMessages(ggplot(data = dp, aes(Glare90, distance))) +
   geom_violin() +
   geom_boxplot(width=0.1)+
   geom_text(data=dp_sum2,
-            aes(glare,max(dp$distance)-(0.005*max(hp$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5)+
+            aes(Glare90,max(dp$distance)-(0.005*max(dp$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5)+
   ylab("Perpendicular sighting distance (km)")+
   xlab(NULL)+
   theme(axis.text=element_text(size=fig_axis_size),
         axis.title=element_text(size=fig_axis_title_size))
 
+plot(dp$glare_swath, dp$distance)
+
 ```
+
+<!-- ```{r violin-dp-sw-gl, fig.cap="Distribution of perpendicular distances of Dall’s porpoise detections with interaction between swell presence/absence and glare none/mild or severe to +/- 90 degrees on both port and starboard. Sightings are truncated at a perpendicular distance of 0.8 km. The shape of the violin plots indicate the distribution of the data; i.e. wider sections indicate areas of higher probability that the perpendicular distances will fall in these ranges. Boxplots within the violin plots indicate the median and interquartile ranges of perpendicular distances. The number of Dall’s porpoise detections in each swell category are included at the top of each plot."} -->
+<!-- dp_sum_i <- dp %>% data.frame() %>% count(interaction)  -->
+
+<!-- suppressMessages(ggplot(data = dp, aes(interaction, distance))) + -->
+<!--   geom_violin() + -->
+<!--   geom_boxplot(width=0.1)+ -->
+<!--   geom_text(data=dp_sum_i, -->
+<!--             aes(interaction,max(dp$distance)-(0.005*max(dp$distance)),label=paste0("n = ",n)),size=4,vjust = -0.5)+ -->
+<!--   ylab("Perpendicular sighting distance (km)")+ -->
+<!--   xlab(NULL)+ -->
+<!--   theme(axis.text=element_text(size=fig_axis_size), -->
+<!--         axis.title=element_text(size=fig_axis_title_size)) -->
+<!-- ``` -->
 
 (ref:cap-plot-ab) Estimated species abundance by season with the lower and upper bounds of a log-normal 95\% confidence interval.
 
 ```{r plot-ab, fig.cap = "(ref:cap-plot-ab)"}
-plot_ab_hp <- ab_hp %>% dplyr::select(Season, "Estimated Abundance"=N, L95.N, U95.N) %>% mutate(Species = "Harbour porpoise")
-plot_ab_dp <- ab_dp %>% dplyr::select(Season, "Estimated Abundance"=N, L95.N, U95.N) %>% mutate(Species = "Dall's porpoise")
-plot_ab_hw <- ab_hw %>% dplyr::select(Season, "Estimated Abundance"=N, L95.N, U95.N) %>% mutate(Species = "Humpback whale")
+plot_ab_hp <- ab_hp[1:4,] %>% dplyr::select(Season, "Estimated Abundance"=N, L95.N, U95.N) %>% mutate(Species = "Harbour porpoise")
+plot_ab_dp <- ab_dp[1:4,] %>% dplyr::select(Season, "Estimated Abundance"=N, L95.N, U95.N) %>% mutate(Species = "Dall's porpoise")
+plot_ab_hw <- ab_hw[1:4,] %>% dplyr::select(Season, "Estimated Abundance"=N, L95.N, U95.N) %>% mutate(Species = "Humpback whale")
+# to plot abund est's by seasonYear instead of season
+plot_ab_hp <- ab_hp[1:9,] %>% dplyr::select(SeasonYear, "Estimated Abundance"=N, L95.N, U95.N) %>% mutate(Species = "Harbour porpoise")
+plot_ab_dp <- ab_dp[1:9,] %>% dplyr::select(SeasonYear, "Estimated Abundance"=N, L95.N, U95.N) %>% mutate(Species = "Dall's porpoise")
+plot_ab_hw <- ab_hw[1:9,] %>% dplyr::select(SeasonYear, "Estimated Abundance"=N, L95.N, U95.N) %>% mutate(Species = "Humpback whale")
+ lev <- levels(all_ap_sf$Species) %>% first_up()
+
 plot_ab <- rbind(plot_ab_hp, plot_ab_dp, plot_ab_hw) %>%
   mutate(Species=factor(Species, levels = lev),
-         Season=factor(Season, levels = levels(all_ap_sf$season)))
+         # Season=factor(Season, levels = levels(all_ap_sf$season)))
+         SeasonYear=factor(SeasonYear, levels = levels(all_ap_sf$seasonYear)))
 plot_ab$Species %<>% droplevels()
 
-pal <- brewer.pal(9, "Set1")[c(1:9)]
-cols <- c('Humpback whale' = pal[1],
-          'Harbour porpoise' = pal[3],
-          'Dall\'s porpoise' = pal[4])
+# pal <- brewer.pal(9, "Set1")[c(1:9)]
+    hw <- brewer.pal(8, "Reds")[8]
+    hp <- brewer.pal(8, "Greens")[8]
+    dp <- brewer.pal(8, "Purples")[8]
+    
+cols <- c('Humpback whale' = hw,
+          'Harbour porpoise' = hp,
+          'Dall\'s porpoise' = dp)
 shape <- c('Humpback whale' = 23,
            'Harbour porpoise' = 24,
            'Dall\'s porpoise' = 22)
-ggplot(plot_ab, aes(Season, `Estimated Abundance`), colour="black") +
-    geom_errorbar(aes(ymin = L95.N, ymax = U95.N,group=Species),
+ggplot(plot_ab, aes(SeasonYear, `Estimated Abundance`), colour="black") +
+    geom_errorbar(colour = "grey70", aes(
+      ymin = L95.N, ymax = U95.N,
+      group=Species
+      ),
                 width=.3,
-                position=position_dodge(.3),
-                size=0.8) +
+                position=position_dodge(.3)
+                # size=0.8
+                ) +
   geom_point(aes(fill=Species,
                  shape=Species),
              size=3.5,
@@ -955,6 +1329,9 @@ ggplot(plot_ab, aes(Season, `Estimated Abundance`), colour="black") +
         legend.title=element_blank(),
         axis.text= element_text(size=fig_axis_size),
         axis.title.y = element_text(size = 14),
-        axis.title.x = element_text(size=14))
+        axis.title.x = element_text(size=14),
+        axis.text.x = element_text(angle=90))+
+  ggtitle("Winter = Feb-Apr, Spring = May-Jul, Summer = Aug-Oct, Fall=Nov-Jan")
+ggsave("C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/diff seasons/late seasonYear abund.png")
 
 ```

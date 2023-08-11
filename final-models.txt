@@ -1,0 +1,19 @@
+hw hw1.5.hn.v.g90c    <-ds(obs, key = "hn", truncation = 1.5, formula=~Visibility+Glare90c) # reg vis, glare mild/none or severe to 90
+
+hp hp.0.65.hn.bfc.obs <- ds(data=obs, truncation=0.65, key="hn", formula=~Clumped_Beaufort+Observer) # 0-1, 2, 3+ (group size clumped 1, 2, 3+)
+
+dp dp0.8.hn.swc..g45c <- ds(data=obs, truncation=0.8, key="hn", formula=~Clumped_Swell+Glare45c) # swell y/n, glare mild/none or severe to 90
+*** But glare45c only has **5** sgt's in severe, so use 90
+
+
+
+
+
+Group Vis G/E vs. M/P - except it's only imp for hw so leave it non-clumped as there's a jump in AIC of >2 when clumped
+Group Bf 0-1, 2, 3+
+Glare 90 mild/none vs. severe
+Swell y/n
+Group Size
+1, 2, 3+
+
+Observer

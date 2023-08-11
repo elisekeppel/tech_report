@@ -5,7 +5,6 @@
 
 _book
 csas-style
-knitr-cache-docx
 knitr-cache-pdf
 knitr-cache-tex
 knitr-figs-docx
@@ -32,3 +31,4 @@ techreport.tex
 *.utf8.md
 
 data/
+nul

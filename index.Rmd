@@ -21,7 +21,8 @@ abstract: |
 abstract_other: |
  Il est nécessaire de connaître l'abondance et la distribution saisonnières des cétacés dans le sud de la mer des Salish et sur le banc Swiftsure pour élaborer des mesures de gestion spatiales et temporelles afin de compenser les risques posés par la navigation maritime associée au projet d’agrandissement du réseau de Trans Mountain (TMX). Quatorze relevés mensuels systématiques le long de transects linéaires ont été menés dans la zone du projet TMX entre septembre 2020 et février 2022. Cet effort de 3 802 km a produit 964 observations de cinq espèces de cétacés. Des méthodes d'échantillonnage des distance ont été utilisées pour produire des estimations saisonnières d'abondance et de densité pour les trois espèces les plus fréquemment rencontrées : les rorquals à bosse, les marsouins communs et les marsouins de Dall. Ces trois espèces ont été observées dans la zone toute l'année, avec cependant des différences saisonnières évidentes d’abondance et de distribution. L'abondance estimée variait d'un minimum de 18 (Intervalle de Confiance à 95 % : 9 - 36) en hiver à un maximum de 274 (IC à 95 % : 160 - 468) en automne pour les rorquals à bosse; de 584 (IC à 95 % : 274 – 1 242) en hiver à 1 430 (IC à 95 % : 986 – 2 073) en automne pour les marsouins communs ; et de 89 (IC 95 % : 36 - 218) en été à 362 (IC 95 % : 203 - 643) en hiver pour les marsouins de Dall. Il est nécessaire de continuer la collecte de données pour : 1) affiner les estimations saisonnières de l'abondance de ces cétacés et évaluer la variabilité saisonnière et interannuelle ; et 2) acquérir suffisamment de données pour produire des cartes de la densité saisonnière prévue pour les rorquals à bosse, les marsouins communs, les marsouins de Dall et potentiellement les écotypes d'épaulards dans toute la zone d'étude afin d’informer les futures mesures de gestion.
 output:
- csasdown::techreport_pdf:
+ # redoc::redoc
+ csasdown::techreport_word:
    french: false
    copy_sty: true
    line_nums: false
@@ -32,6 +33,9 @@ type:
 # ------------
 # End of options to set
 knit: bookdown::render_book
+# knit: (function(input, ...) {
+#       csasdown::render('_bookdown.yml')`
+#       })
 site: bookdown::bookdown_site
 link-citations: true
 bibliography: bib/refs.bib
@@ -52,6 +56,7 @@ if (is_latex_output()) {
   knitr_cache_dir <- "knitr-cache-docx/"
   fig_out_type <- "png"
 }
+ options(knitr.table.format = "latex")
 fig_asp <- 0.618
 fig_width <- 9
 fig_out_width <- "6in"
@@ -70,7 +75,7 @@ opts_chunk$set(
   out.width = fig_out_width,
   echo = FALSE,
   #  autodep = TRUE,
-  #  cache = TRUE,
+  cache = TRUE,
   cache.comments = FALSE,
   dev = fig_out_type,
   dpi = fig_dpi,

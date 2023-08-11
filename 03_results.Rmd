@@ -13,59 +13,139 @@ knitr::knit_hooks$set(inline=
 ```
 
 ```{r load-data}
-{iterations <- readRDS("data/iterations.rds")
-month <- 2
+{surveys <- readRDS("data/surveys.rds")
+month <- 12
 year <- 2022
-  month_abb <- month.abb[2]
+  month_abb <- month.abb[month]
   survey_title <- paste(cemore::first_up(as.character(month_abb)), year)
   surveyid = paste0("cemore_", year, tolower(month_abb))
 }
 
 # Load previously saved data
-all_effort <- load_effort(year, as.numeric(month), single_survey = F, vessel = "MB") %>% filter(date<"2022-03-01")
-# all_effort_lines <- readRDS(paste0("output/all_effort_lines_to ", survey_title, ".rds")) %>%
-  # mutate(length_km = as.numeric(st_length(geometry))/1000)
-all_effort_lines <- get_effort_lines(all_effort) %>%
-  mutate(length_km = as.numeric(st_length(geometry))/1000)
+# all_effort <- load_effort(year, as.numeric(month), single_survey = F, vessel = "MB") 
+# saveRDS(all_effort, "output_cemore/all_effort/all_effort_to_2022_10.rds")
+all_effort <- readRDS(paste0("C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/all_effort/all_effort_to_",year,"_",month, ".rds"))
+all_effort_lines <- readRDS(paste0("C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/all_lines/all_effort_lines_to_",year,"_",month, ".rds")) #%>% 
+  # mutate(length_km = as.numeric(st_length(geometry))/1000) %>% 
+  # filter(length_km>0)
+# or all_effort_lines %<>% mutate(npts=npts(geometry,by_feature=T)) %>% filter(npts>1)
+# all_effort_lines <- get_effort_lines(all_effort)
+# saveRDS(all_effort_lines, "output_cemore/all_lines/all_effort_lines_to_2022_10.rds")
 
-all_ap_sf <- load_sightings(year, as.numeric(month), single_survey = F, vessel="MB") %>% filter(date<"2022-03-01") %>% 
-  # readRDS(paste0("output/all_effort_sgt_to ", survey_title, ".rds")) %>%
-  # rename(Observer=SightedBy) %>%
-  dplyr::mutate(
-                Clumped_Group_Size = factor(
+# all_ap_sf <- load_sightings(year, as.numeric(month), single_survey = F, vessel="MB") 
+# saveRDS(all_ap_sf, "output_cemore/all_sgt/all_effort_sgt_to_2022_10.rds")
+all_ap_sf <- readRDS("C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/all_sgt/all_effort_sgt_to_2022_12.rds")
+all_ap_sf <- all_ap_sf %>%  # filter(date<"2022-03-01") %>% 
+  # readRDS(paste0("output_cemore/all_sgt/all_effort_sgt_to_",year,"_"< , ".rds")) %>%
+  rename(Glare90=glare) %>%
+  dplyr::mutate(Beaufort = as.numeric(as.character(Beaufort)),
+                Clumped_Beaufort = case_when(
+                  Beaufort <2 ~ "0-1",
+                  Beaufort == 2 ~ "2",
+                  Beaufort > 2 ~ "3+"),
+                Clumped_Group_Size2 = factor(
                   dplyr::case_when(
                     Group_Size==1 ~ "1",
                     Group_Size==2 ~ "2",
                     Group_Size==3 ~ "3",
                     Group_Size>3 ~ "4+"
                   ), levels=  c("1","2","3","4+")),
+                Clumped_Group_Size = factor(
+                  dplyr::case_when(
+                    Group_Size==1 ~ "1",
+                    Group_Size==2 ~ "2",
+                    Group_Size>2 ~ "3+"
+                  ), levels=  c("1","2","3+")),
                 swell=factor(case_when(
-                  swell == "Big >2" ~ "Mod-Big",
-                  swell == "Moderate 1-2 m" ~ "Mod-Big",
+                  swell %in% c("Big >2", "Moderate 1-2 m") ~ "Mod-Big",
                   swell == "Low <1 m" ~ "Low",
-                  swell == "No swell" ~ "None"),
-                  levels= c("None", "Low", "Mod-Big")),
+                  swell == "No swell" ~ "No swell"),
+                  levels= c("No swell", "Low", "Mod-Big")),
                 Clumped_Swell=factor(case_when(
-                  swell == "Mod-Big" ~ "Swell",
-                  swell == "Low" ~ "Swell",
-                  swell == "None" ~ "No Swell"),
-                  levels= c("No Swell","Swell")),
-                Clumped_Beaufort = case_when(
-                  Beaufort <2 ~ "0-1",
-                  Beaufort == 2 ~ "2",
-                  Beaufort > 2 ~ "3+"),
-                Clumped_Vis = case_when(
-                  Visibility == "G&E"~ "G/E",
-                  !Visibility == "G&E"~ "M/P"),
+                  swell %in% c("Mod-Big", "Low") ~ "Swell",
+                  swell == "No swell" ~ "No swell"),
+                  levels= c("No swell","Swell")),
+                Clumped_Swell2=factor(case_when(
+                  swell == "Mod-Big" ~ "Mod-Big",
+                  swell %in% c("Low", "No swell") ~ "Low-no swell"),
+                  levels= c("Low-no swell","Mod-Big")),
+                # Visibility=case_when(   # this is now incorporated into get_effort_lines and get_sightings
+                #   Visibility == "F" ~ "M",
+                #   !Visibility== "F" ~ Visibility
+                # ),
+                Clumped_Visibility = case_when(
+                  Visibility %in% c("G&E", "Moderate") ~ "G/M",
+                  Visibility == "P" ~ "P"),
+                Clumped_Vis2 = case_when(
+                  Visibility == "G&E"~ "G",
+                  Visibility %in% c("Moderate", "P") ~ "M/P"),
                 Observer = case_when(
                   Observer == "CMcMillan" ~"a",
                   Observer == "EKeppel"~"b",
-                  Observer == "LSpaven"~ "c")) %>% 
+                  Observer == "LSpaven"~ "c"),
+         l_glare = ifelse(Glare90 == "None", NA, l_glare) %>% as.numeric(),
+         r_glare = ifelse(Glare90 == "None", NA, r_glare) %>% as.numeric(),
+         Glare90 = ifelse(Glare90 == "Severe","Severe","None/Mild"),
+         glare_swath = abs(l_glare-r_glare),
+         l_glare45 = case_when(
+           l_glare <= -45 ~ -45,
+           l_glare %in% -45:45 ~ l_glare,
+           l_glare > 45 ~ NA
+         ),
+         r_glare45 = case_when(
+           r_glare >=45 ~ 45,
+           r_glare %in% -45:45 ~ r_glare,
+           r_glare < -45 ~ NA
+         ),
+         glare_swath45=case_when(
+           l_glare45 %in% -45:45 & r_glare45 %in% -45:45 & !l_glare45==r_glare45 ~ abs(l_glare45-r_glare45)),
+         # Glare90y = ifelse(!Glare90=="None","y","n"),
+         # Glare90 = ifelse(Glare90=="Severe","Severe","Mild/None"),
+         glare_swath = ifelse(Glare90=="Severe", glare_swath, 0),
+         glare_swath45 = ifelse(Glare90=="Severe",glare_swath45, 0)#,
+         # Glare45 = ifelse(l_glare %in% -45:45 | r_glare %in% -45:45, Glare90, "None"),
+         # Glare45y = ifelse(Glare45=="None","n","y"),
+         # Glare45 = ifelse(Glare45=="Severe","Severe","Mild/None")
+         ) %>% 
   mutate(
+    # change which season each month belongs to in order to check effect of our season choices on abund
+    season = factor(dplyr::case_when(
+      month %in% c(1:2,12) ~ "Winter",
+      month %in% c(3:5) ~ "Spring",
+      month %in% c(6:8) ~ "Summer",
+      month %in% c(9:11)  ~ "Fall"
+    ), levels = c("Winter", "Spring", "Summer", "Fall")),
+    # season = factor(dplyr::case_when(
+    #   month %in% c(2:4) ~ "Winter",
+    #   month %in% c(5:7) ~ "Spring",
+    #   month %in% c(8:10) ~ "Summer",
+    #   month %in% c(11:12,1)  ~ "Fall"
+    # ), levels = c("Winter", "Spring", "Summer", "Fall")),
+    seasonYear = paste0(tolower(season), year),
+    seasonYear = factor(seasonYear, levels = unique(seasonYear)),
+    
     # Region.Label= Survey,
-    Region.Label= season,
+    # Region.Label= season,
+    Region.Label= seasonYear,
     Sample.Label=TransectID,
-         object=Sgt_ID)
+    object=Sgt_ID)
+
+# examining effect of glare as a portion of the field of view vs. presence/absence
+# x <- all_ap_sf %>% dplyr::select(Species,Glare90, l_glare, r_glare, glare_swath, l_glare45, r_glare45, glare_swath45,distance) %>%
+#   mutate(binned_swath = round_any(glare_swath, 5, ceiling),
+#          binned_swath45 = round_any(glare_swath45, 5,ceiling)) %>%
+#   filter(Species %like% "hump")
+# plot(x$binned_swath, x$distance)
+# plot(x$glare_swath, x$distance)
+# plot(x$binned_swath45, x$distance)
+# plot(x$glare_swath45, x$distance)
+
+# View(x)
+# ggplot() + geom_bar(data=x,mapping=aes(x=binned_swath, y=distance))
+# ggplot(data=x, aes(x=binned_swath, y=distance)) +
+#   geom_bar(stat="identity") +
+#   theme(axis.text.x=element_text(angle=90))
+
 all_ap_sf$Species <-  all_ap_sf$Species %>% 
   as.character() %>% 
   tolower()
@@ -86,28 +166,61 @@ all_ap_sf$Species = factor(all_ap_sf$Species, levels =
                                "fin whale",
                                "minke whale"
                              ))
+
 B <- 2937.946 # survey area (Can only) %>% units::set_units(km^2)#km ^2
 
 effort <- all_effort_lines %>% 
   data.frame() %>% 
+     # change which season each month belongs to in order to check effect of our season choices on abund
+  mutate(season = factor(dplyr::case_when(
+      month %in% c(1:2,12) ~ "Winter",
+      month %in% c(3:5) ~ "Spring",
+      month %in% c(6:8) ~ "Summer",
+      month %in% c(9:11)  ~ "Fall"
+    ), levels = c("Winter", "Spring", "Summer", "Fall")),
+   # mutate(season = factor(dplyr::case_when(
+   #    month %in% c(2:4) ~ "Winter",
+   #    month %in% c(5:7) ~ "Spring",
+   #    month %in% c(8:10) ~ "Summer",
+   #    month %in% c(11:12,1)  ~ "Fall"
+   # ), levels = c("Winter", "Spring", "Summer", "Fall")),
+   seasonYear = paste0(tolower(season), year),
+   seasonYear = factor(seasonYear, levels = unique(seasonYear))) %>%
   # unique segment ID's and length for each
   transmute(Sample.Label=TransectID,
             # Region.Label = SurveyID,
-            Region.Label = season,
+            # Region.Label = season,
+            Region.Label = seasonYear,
             Effort = st_length(geometry),
             Area=B) %>% 
   group_by(Region.Label,Area,Sample.Label) %>% 
   summarise(Effort=as.numeric(sum(Effort))/1000) %>% ungroup()
 
+summary_all <- survey_summary(single=F)
+# x <- summary_all[[2]] %>% filter(Species %in% c("humpback whale", "Dall's porpoise", "harbour porpoise")) %>% 
+#   group_by(seasonYear, Species) %>% 
+#   summarise(surveys=n(), sightings=sum(number_sightings), indivs = sum(number_individuals))
+# y <- summary_all[[3]] %>% group_by(season, year, seasonYear) %>% summarise(surveys=n(),transects = sum(transects), distance_km=sum(distance_km))
+# z <- right_join(y,x) %>% dplyr::select(-seasonYear)
+# View(z)
+
+# a <- survey_summary(single=F,Year=2023,Month=5)
+# write.csv(a[[3]], "output_cemore/survey_effort_summary.csv")
+
+sum_eff <- summary_all[[3]] %>% 
+  as.data.frame() %>% 
+  mutate(month_name=month.name[month])
+# save(all_effort, all_effort_lines, all_ap_sf, effort, summary_all, sum_eff,surveys,year,month,month_abb, survey_title, surveyid, file="tech_rep_data.RData")
+# load("tech_rep_data.RData")
 ```
 
 ## LINE-TRANSECT SURVEYS
 
-Fourteen surveys were conducted between September 2020 and `r month.name[all_effort %>% filter(year == max(year)) %>% dplyr::select(month) %>% max(month)]` `r as.character(max(all_effort$year))`, resulting in a total of `r sum(all_effort_lines$length_km) %>% round(digits=0)` km of effort along pre-determined transect lines in Canadian portions of the study area (Figure \@ref(fig:plot-seasonal-track)). Surveys were conducted at least once during all months with the exception of December. On-effort distance covered varied among seasons, from a low of `r all_effort_lines %>% as.data.frame() %>% group_by(season) %>%  summarise(l=sum(length_km)) %>% dplyr::select(l) %>% min() %>% round(digits=0)` km in `r levels(all_effort_lines$season)[all_effort_lines %>% as.data.frame() %>% group_by(season) %>% summarise(l=sum(length_km)) %>% filter(l==min(l)) %>% dplyr::select(season) %>% as.numeric()] %>% tolower()`, to a high of `r all_effort_lines %>% as.data.frame() %>% group_by(season) %>% summarise(l=sum(length_km)) %>% as.data.frame() %>% dplyr::select(l) %>% max() %>% round(digits=0)` km in `r levels(all_effort_lines$season)[all_effort_lines %>% as.data.frame() %>% group_by(season) %>% summarise(l=sum(length_km)) %>%as.data.frame() %>% filter(l==max(l)) %>% dplyr::select(season) %>% as.numeric()] %>% tolower()`. Coverage of the western-most and northern-most transect lines in some months of each season was limited by weather conditions. 
+In total, `r unique(all_effort_lines$SurveyID) %>% length() %>% english::as.english() %>% as.character()` surveys were conducted between September 2020 and `r month.name[all_effort %>% filter(year == max(year)) %>% dplyr::select(month) %>% max(month)]` `r as.character(max(all_effort$year))`, resulting in a total of `r sum(all_effort_lines$length_km) %>% round(digits=0)` km of effort along pre-determined transect lines in Canadian portions of the study area (Figure \@ref(fig:plot-seasonal-track)). Surveys were conducted at least once during all months with the exception of December. On-effort distance covered varied among surveys, from a low of `r sum_eff[which(sum_eff$distance_km==min(sum_eff$distance_km)),]$distance_km` km in `r sum_eff[which(sum_eff$distance_km==min(sum_eff$distance_km)),]$month_name`, `r sum_eff[which(sum_eff$distance_km==min(sum_eff$distance_km)),]$year %>% as.character()`, to a high of `r sum_eff[which(sum_eff$distance_km==max(sum_eff$distance_km)),]$distance_km` km in `r sum_eff[which(sum_eff$distance_km==max(sum_eff$distance_km)),]$month_name`, `r sum_eff[which(sum_eff$distance_km==max(sum_eff$distance_km)),]$year %>% as.character()`. Coverage of the western-most and northern-most transect lines in some months of each season was limited by weather conditions. 
 
 ## SPECIES SIGHTINGS AND GENERAL DISTRIBUTION PATTERNS
 
-A total of `r nrow(all_ap_sf)` sightings of five cetacean species (`r sum(all_ap_sf$Group_Size)` individuals), comprised of humpback whales, harbour porpoises, Dall’s porpoises, fin whales and killer whales, were observed while surveying along pre-determined transect lines (Table \@ref(tab:tab-survey-sightings-sum)). In addition, grey whales and minke whales were sighted in the survey area while “off-effort” (transiting between transect lines). 
+A total of `r nrow(all_ap_sf)` sightings of five cetacean species (`r sum(all_ap_sf$Group_Size)` individuals), comprised of humpback whales, harbour porpoises, Dall’s porpoises, fin whales and killer whales, were observed while surveying along pre-determined transect lines. In addition, grey whales and minke whales were sighted in the survey area while “off-effort” (transiting between transect lines). 
 
 Humpback whales were sighted during all seasons (`r all_ap_sf %>% filter(Species == "humpback whale") %>% nrow()` sightings comprised of `r sum(all_ap_sf[which(all_ap_sf$Species=="humpback whale"),]$Group_Size)` individuals); however, no individuals were observed while on-effort in February or March 2021 (Figure \@ref(fig:monthly-hw)). Peak detections occurred in early fall, and secondarily in summer. Winter humpback sightings primarily occurred in Juan de Fuca Strait while spring sightings were concentrated on Swiftsure Bank. The highest number and broadest distribution of humpback sightings occurred in October in both years.
 
