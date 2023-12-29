@@ -1,0 +1,124 @@
+definitions of objects/headers in dht2
+
+stratum_labels = level of replicates (year when doing "seasonyear")
+bigdat = full species dataset used in *** hw detection function***
+
+later, bigdat is recreated from the flatfile for the specific model, for example, 
+just the spring season hw data
+
+in bigdat (nrow=180):
+Nc_cuecorrected, rate, rate_df, rate_CV, rate_var = all for multipliers which we aren't using
+n_ddf = number of samples in detection func (truncated) 336 (vs. 406)
+n_par = number of parameters in det func 2
+Nhat = bigdat$size/bigdat$p (Horvitz-Thompson-corrected per-sighting counts)
+p = prob of detection (by clumped_vis for hw as in the df_model)
+
+#################################################################
+##### Note that size is still 1 for lines with no sightings brought back in after truncation removed them
+##### Do we need to remove this? Does it impact anything?!
+#################################################################
+
+res/res_sample: bigdat with some calcs (grouped by transect and year)
+transect_n =  sum(res$size, na.rm=TRUE) (already grouped by transect & year
+     ---> sum of all indiv's sighted per transect
+transect_n_observations = length(na.omit(unique(res$object)))
+     ---> number of observations per transect
+
+transect_Nc = sum(res$Nhat, na.rm=TRUE)
+     ---> sum of H-T corrected group sizes ie. (sum(size/p)) per transect
+
+res_sample = summary of sightings per transect (indivs and sgts) # 155 (per transect)
+## EK edit function suggestion : add res_sample$size <- NULL because Nhat and size can still differ (from before grouping), so have 4 extra lines for transects 506, 527, 529, 545
+
+res now grouped by year (or other stratum label) = # 180 after truncation (187 in flatfile, 177 after removing 10 with dist >1.5, 180 after bringing back in the 3 Sample.Labels (transects) with sightings outside of truncation distance only)
+n_individuals  = indiv's per year (41, 20)
+n_observations = sgt's per year (33, 14)
+group_var = group size variance (0.011421028, 0.009083045)
+n = n_observations = n observations per stratum (year)
+Nc = abundance estimate per stratum in covered area
+  = sum(.data$Nhat, na.rm=TRUE)
+
+in varNhat(): 
+- strat_vars = stratum variables (we're using year)
+- grps = strat_vars (again, year)
+
+from varNhat output "vardat":
+p_var & p_average = same for always
+df_var = variance in detection/abund est based on a year or a stratum of data
+
+UNGROUP RES (was grouped by year)
+merge with vardat
+
+Group by year again and reduce df to only necessary columns (lose individual transect details, all grouped by either transect or year)
+
+resT = ungrouped res df for later use
+
+Calculate ER variance with ER_var_f() = EK step through er_var_f() as breaks internally
+due to a grouping error
+
+ER_df = ER degrees of freedom
+df_CV = detection function CV
+ER_CV = ER CV
+group_CV = group size CV
+
+erdat (output of er_var_f, new res object):
+### note from within er_var_f:  # note that the ER reported in summary is using n/L but we need to use
+        # the N/L estimate for the total variance calculation
+ - within varn, calculates ER_var using O2 method
+ER_var = ER variance
+ER_var_Nhat = ((erdat$Area/sum(erdat$Covered_area))* # scale up to total study area
+                                erdat$Nc*sum(erdat$Effort))^2 *
+                 erdat$ER_var/
+                 sum(erdat$transect_n_observations)^2
+
+res is now erdat (ie. res + ER_var, which is by year), reduced to one summary line per year
+
+dat_row : (1 summary row per stratum (ie. year)) 
+weight=annual proportion of total effort
+ER_var       = sum((.data$Effort/sum(.data$Effort))^2*
+                                      .data$ER_var,
+                                    na.rm=TRUE)
+ER_var_Nhat  = sum(.data$weight^2*.data$ER_var_Nhat, na.rm=TRUE)
+ER_df        = .data$ER_var_Nhat^2/
+                   sum((
+                     (.data$weight^2 *
+                           res$ER_var_Nhat)^2/
+                          .data$ER_df))
+ER = .data$n/.data$Effort
+ER_CV = if_else(.data$ER==0,
+                               0,
+                               sqrt(.data$ER_var)/.data$ER)
+
+group_mean     = mean(dat_row$group_mean)
+group_var      = sum(dat_row$group_var)
+group_var_Nhat = sum(dat_row$group_var_Nhat)
+group_CV = if_else(.data$group_var==0, 0,
+                                  sqrt(.data$group_var)/.data$group_mean)
+Totals = ER_var (same for ER_varNhat) total = sum of annual ER_var's weighted by annual effort
+ER = overall n/L
+aund = weighted avg
+
+##########################
+##########################
+HARBOUR PORPOISE
+##########################
+##########################
+
+Dec 6 wee hours...
+WHY is the group mean different bw hp_r2_f and hp_r2_y_f? Do they not average them the same? Weighted??
+WHY/HOW can abundance cv be higher when ER var decreases?? How is total cv added up?
+
+R2, strat var = survey id
+# For hp, all seasons had lower contribution of ER var with survey id than with year as strat var
+# notably, all seasons other than summer had lower abund cv with year as strat var (and it was only slightly higher, very close)
+
+O2
+# all seasons also have lower contribution of ER var with O2 rather than R2 er_est
+
+Best so far overall (both lower ER var contribution to overall variance and lower ER cv) is year x O2
+
+INNES
+worse for all seasons (O2,surveyid) in both ways
+
+CONCLUSION
+for hp, use 

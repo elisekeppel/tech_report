@@ -1,0 +1,97 @@
+---
+title: "dht2"
+author: "EK"
+date: "11/9/2023"
+output: pdf_document
+filename: "dht2_hw"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## dht2() comparisions : Humpback data
+
+```{r setup, include=FALSE}
+
+```
+
+# Compare strat_form = surveyid vs year
+
+er_est = R2
+innes = F
+
+shows :
+winter surveyid, winter year, 
+spring surveyid, spring year, 
+summer surveyid, summer year,
+fall surveyid, fall year
+
+```{r surveyid_v_year include=FALSE}
+hw_R2_w_filtered <- readRDS("variance/hw/surveyid/hw_R2_w______filtered.rds")
+hw_R2_w_filtered
+hw_R2_y_w <- readRDS("variance/hw/year/R2/hw_R2_y_w.rds")
+hw_R2_y_w
+
+hw_R2_sp <- readRDS("variance/hw/surveyid/hw_R2_sp.rds")
+hw_R2_sp
+hw_R2_y_sp <- readRDS("variance/hw/year/R2/hw_R2_y_sp.rds")
+hw_R2_y_sp
+
+hw_R2_su <- readRDS("variance/hw/surveyid/hw_R2_su.rds")
+hw_R2_su
+hw_R2_y_su <- readRDS("variance/hw/year/R2/hw_R2_y_su.rds")
+hw_R2_y_su
+
+hw_R2_f <- readRDS("variance/hw/surveyid/hw_R2_f.rds")
+hw_R2_f
+hw_R2_y_f <- readRDS("variance/hw/year/R2/hw_R2_y_f.rds")
+hw_R2_y_f
+```
+
+- give SAME Abund, but with year, get lower cv. 
+- Makes sense, as with surveyid, transects are grouped by surveyid; with years, 
+transects are pooled together within years. So more nested rep's within each year than 
+were within each surveyid (all transects from all surveys within a season year pooled).
+
+# Compare r2 v o2
+
+strat_form = year,
+innes = F
+
+shows :
+winter r2, winter o2, 
+spring r2, spring o2, 
+summer r2, summer o2,
+fall r2,     fall o2
+
+```{r r2_v_o2}
+hw_R2_y_w
+hw_O2_y_w <- readRDS("variance/hw/year/O2/hw_O2_y_w.rds")
+hw_O2_y_w
+
+hw_R2_y_sp
+hw_O2_y_sp <- readRDS("variance/hw/year/O2/hw_O2_y_sp.rds")
+hw_O2_y_sp
+
+hw_R2_y_su
+hw_O2_y_su <- readRDS("variance/hw/year/O2/hw_O2_y_su.rds")
+hw_O2_y_su
+
+hw_R2_y_f
+hw_O2_y_f <- readRDS("variance/hw/year/O2/hw_O2_y_f.rds")
+hw_O2_y_f
+
+```
+
+```{r cars}
+summary(cars)
+```
+
+
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

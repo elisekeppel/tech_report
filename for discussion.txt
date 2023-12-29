@@ -1,0 +1,26 @@
+original intention of 'surveys' was for each to be representative of the survey area
+
+most months cover most of area
+
+with this many rep's, should be able to capture average density, 
+with some surveys missing areas with more hw's or less hw's
+
+if not, then exclude non-representative surveys?
+
+if combine surveys within season, end up with some areas covered more than others - 
+may end up with other issue in abundance
+(some areas still more represented than others)
+
+dht2 - 1. code issues
+2. is it doing what we think - ie. overall var (between years for each season)
+as in the diagram for replicate strat'n
+3. email for clarification first. in the way variance is being carried through - nonindep in det func var,
+wonder whether det fun var is being calc'd sep by season/year, and is that applicable
+when we're using a global detection function? and does it matter?
+
+note assumptions in manuscript
+
+check that O2 is still best - ie reduces er var
+check that it makes sense that er var is higher with innes - why?
+sure, nhat is higher than count for each transect going into er calc, but it's 
+supposed to reduce er var so check

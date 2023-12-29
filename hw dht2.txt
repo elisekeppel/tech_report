@@ -1,0 +1,37 @@
+HW dht2() notes
+
+tried running with strat = survey id, R2, innes=F
+
+failed due to 2 surveys with zero sightings in winter. try strat = year
+
+year, R2, innes=F ran successfully
+
+year, innes = F, effect of O2 (vs R2)
+cv.ER O2 all dec
+se & cv dec for each year, but total increases slightly... WHy?
+(except fall, totals decrease slightly) HOW IS THIS TOTAL CALCULATED?
+ER contrib all dec
+
+year, O2, effect of innes = T
+w cv.ER all inc, 
+se & cv slight increase or same, same total,
+ER contrib all inc
+
+fall cv.ER all inc,
+se & cv slight increase or same, same total,
+ER contrib all inc
+
+spring cv.ER all inc,
+se & cv slight dec or inc, same total,
+ER contrib all inc
+
+summer cv.ER all inc,
+se & cv slight increase or same, same total,
+ER contrib all inc
+
+looking at innes = T and R2 had even higher ER var contrib
+
+Lowest ER var contribution seems to be year (cuz can't do survey id), O2, not innes
+
+
+

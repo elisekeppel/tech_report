@@ -1,0 +1,24 @@
+HP dht2() notes
+
+survey id, R2, innes=F successful
+
+R2, innes = F, effect of year (vs survey id)
+cv.ER inc
+se & cv dec (except summer cv inc) 
+ER contrib inc
+
+survey id, innes = F, effect of O2 (vs R2)
+cv.ER all dec, 
+se & cv dec (cv same for w feb2021), total dec (cv same for w),
+ER contrib all dec
+
+survey id, O2, effect of innes = T
+w cv.ER all inc, 
+se & cv inc/dec, total same,
+ER contrib all inc
+
+Lowest ER var contribution seems to be survey id, O2, not innes
+
+try S2 for a few iterations
+
+

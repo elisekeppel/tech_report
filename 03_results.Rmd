@@ -14,8 +14,8 @@ knitr::knit_hooks$set(inline=
 
 ```{r load-data}
 {surveys <- readRDS("data/surveys.rds")
-month <- 12
-year <- 2022
+month <- 11
+year <- 2023
   month_abb <- month.abb[month]
   survey_title <- paste(cemore::first_up(as.character(month_abb)), year)
   surveyid = paste0("cemore_", year, tolower(month_abb))
@@ -25,18 +25,15 @@ year <- 2022
 # all_effort <- load_effort(year, as.numeric(month), single_survey = F, vessel = "MB") 
 # saveRDS(all_effort, "output_cemore/all_effort/all_effort_to_2022_10.rds")
 all_effort <- readRDS(paste0("C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/all_effort/all_effort_to_",year,"_",month, ".rds"))
-all_effort_lines <- readRDS(paste0("C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/all_lines/all_effort_lines_to_",year,"_",month, ".rds")) #%>% 
-  # mutate(length_km = as.numeric(st_length(geometry))/1000) %>% 
-  # filter(length_km>0)
-# or all_effort_lines %<>% mutate(npts=npts(geometry,by_feature=T)) %>% filter(npts>1)
+all_effort_lines <- readRDS(paste0("C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/all_lines/all_effort_lines_to_",year,"_",month, ".rds"))
+# TO DO : fix in main dataset
+all_effort_lines[which(all_effort_lines$TransectID=="cemore_2022apr7" ),]$month <- 4
 # all_effort_lines <- get_effort_lines(all_effort)
-# saveRDS(all_effort_lines, "output_cemore/all_lines/all_effort_lines_to_2022_10.rds")
-
+# saveRDS(all_effort_lines, paste0("C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/all_lines/all_effort_lines_to_",year,"_",month, ".rds"))
 # all_ap_sf <- load_sightings(year, as.numeric(month), single_survey = F, vessel="MB") 
 # saveRDS(all_ap_sf, "output_cemore/all_sgt/all_effort_sgt_to_2022_10.rds")
-all_ap_sf <- readRDS("C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/all_sgt/all_effort_sgt_to_2022_12.rds")
-all_ap_sf <- all_ap_sf %>%  # filter(date<"2022-03-01") %>% 
-  # readRDS(paste0("output_cemore/all_sgt/all_effort_sgt_to_",year,"_"< , ".rds")) %>%
+all_ap_sf <- readRDS(paste0("C:/users/keppele/documents/cemore/analysis/cemore_analysis/output_cemore/all_sgt/all_effort_sgt_to_",year,"_",month,".rds"))
+all_ap_sf <- all_ap_sf %>%
   rename(Glare90=glare) %>%
   dplyr::mutate(Beaufort = as.numeric(as.character(Beaufort)),
                 Clumped_Beaufort = case_when(
@@ -46,10 +43,8 @@ all_ap_sf <- all_ap_sf %>%  # filter(date<"2022-03-01") %>%
                 Clumped_Group_Size2 = factor(
                   dplyr::case_when(
                     Group_Size==1 ~ "1",
-                    Group_Size==2 ~ "2",
-                    Group_Size==3 ~ "3",
-                    Group_Size>3 ~ "4+"
-                  ), levels=  c("1","2","3","4+")),
+                    Group_Size>1 ~ "2+"
+                  ), levels=  c("1","2+")),
                 Clumped_Group_Size = factor(
                   dplyr::case_when(
                     Group_Size==1 ~ "1",
@@ -69,10 +64,6 @@ all_ap_sf <- all_ap_sf %>%  # filter(date<"2022-03-01") %>%
                   swell == "Mod-Big" ~ "Mod-Big",
                   swell %in% c("Low", "No swell") ~ "Low-no swell"),
                   levels= c("Low-no swell","Mod-Big")),
-                # Visibility=case_when(   # this is now incorporated into get_effort_lines and get_sightings
-                #   Visibility == "F" ~ "M",
-                #   !Visibility== "F" ~ Visibility
-                # ),
                 Clumped_Visibility = case_when(
                   Visibility %in% c("G&E", "Moderate") ~ "G/M",
                   Visibility == "P" ~ "P"),
@@ -82,7 +73,10 @@ all_ap_sf <- all_ap_sf %>%  # filter(date<"2022-03-01") %>%
                 Observer = case_when(
                   Observer == "CMcMillan" ~"a",
                   Observer == "EKeppel"~"b",
-                  Observer == "LSpaven"~ "c"),
+                  Observer == "LSpaven"~ "c",
+                  Observer == "ChristieMcMillan" ~"a",
+                  Observer == "EliseKeppel"~"b",
+                  Observer == "LisaSpaven"~ "c"),
          l_glare = ifelse(Glare90 == "None", NA, l_glare) %>% as.numeric(),
          r_glare = ifelse(Glare90 == "None", NA, r_glare) %>% as.numeric(),
          Glare90 = ifelse(Glare90 == "Severe","Severe","None/Mild"),
@@ -109,24 +103,34 @@ all_ap_sf <- all_ap_sf %>%  # filter(date<"2022-03-01") %>%
          ) %>% 
   mutate(
     # change which season each month belongs to in order to check effect of our season choices on abund
-    season = factor(dplyr::case_when(
-      month %in% c(1:2,12) ~ "Winter",
-      month %in% c(3:5) ~ "Spring",
-      month %in% c(6:8) ~ "Summer",
-      month %in% c(9:11)  ~ "Fall"
-    ), levels = c("Winter", "Spring", "Summer", "Fall")),
+    ## shift seasons to start one month earlier
+    # season = factor(dplyr::case_when(
+    #   month %in% c(1:2,12) ~ "Winter",
+    #   month %in% c(3:5)    ~ "Spring",
+    #   month %in% c(6:8)    ~ "Summer",
+    #   month %in% c(9:11)   ~ "Fall"
+    # ), levels = c("Winter", "Spring", "Summer", "Fall")),
+    # seasonYear = paste0(tolower(season),
+    #   case_when(
+    #     month %in% c(1:11) ~ year,
+    #     month == 12        ~ year+1)),
+    
+    ## shift seasons to start one month later
     # season = factor(dplyr::case_when(
     #   month %in% c(2:4) ~ "Winter",
     #   month %in% c(5:7) ~ "Spring",
     #   month %in% c(8:10) ~ "Summer",
     #   month %in% c(11:12,1)  ~ "Fall"
     # ), levels = c("Winter", "Spring", "Summer", "Fall")),
-    seasonYear = paste0(tolower(season), year),
-    seasonYear = factor(seasonYear, levels = unique(seasonYear)),
+    # seasonYear = paste0(tolower(season),
+    #   case_when(
+    #     month %in% c(2:12) ~ year,
+    #     month == 1         ~ year-1)),
     
+    seasonYear = factor(seasonYear, levels = unique(seasonYear)),
     # Region.Label= Survey,
-    # Region.Label= season,
-    Region.Label= seasonYear,
+    Region.Label= season,
+    # Region.Label= seasonYear,
     Sample.Label=TransectID,
     object=Sgt_ID)
 
@@ -169,28 +173,73 @@ all_ap_sf$Species = factor(all_ap_sf$Species, levels =
 
 B <- 2937.946 # survey area (Can only) %>% units::set_units(km^2)#km ^2
 
+#------------------------------------------------
+# create new tid's so they are ordered geographically NE to SW for alternate er_var mehtods
+# (ie. increasing distance from a point near Vancouver N of transects)
+#------------------------------------------------
+
+## previous function created to be run within purrr::map to apply to each survey individually
+# sid_list <- unique(all_effort_lines$SurveyID)
+# ggplot() + geom_sf(data=all_effort_lines[which(all_effort_lines$SurveyID == sid_list[1]),]) +
+#   geom_sf(data=van, colour="red")
+# order_transects <- function(){
+# x <- all_effort_lines %>%
+  # filter(SurveyID==sid) %>%
+  # dplyr::select(TransectID) # SurveyID
+
+van <- data.frame(x = -123.3, y = 49.4) %>%
+  sf::st_as_sf(coords = c("x","y"), crs=4326)
+d <- as.vector(round(st_distance(van, all_effort_lines$geometry)/1000,2))
+
+new_tids <- all_effort_lines %>% dplyr::mutate(dist = d) %>%
+  st_drop_geometry() %>%
+  group_by(TransectID) %>% #SurveyID
+  summarise(dist=min(dist)) %>%
+  ungroup() %>%
+  arrange(dist) %>%
+  mutate(order = 1:length(unique(TransectID))) %>% dplyr::select(-dist)
+         # new_TID = paste0(SurveyID, order),
+         # new_TID = factor(new_TID, levels = new_TID))
+
+# previously ran this as a function in purrr::map() to apply to each survey individually
+# rm(new_tids)
+# new_tids <- map_df(sid_list, order_transects) #%>% dplyr::select(-dist)
+
+all_effort_lines <- all_effort_lines %>% full_join(new_tids) %>% #mutate(TransectID=order, new_TID = NULL) %>%
+  arrange(order)
+all_ap_sf <- all_ap_sf %>% left_join(new_tids)# %>% mutate(TransectID=new_TID, new_TID = NULL)
+all_ap_sf %<>%   mutate(Sample.Label=TransectID) %>% arrange(TransectID)#update Sample.Label w new tids
+#------------------------------------------------
 effort <- all_effort_lines %>% 
   data.frame() %>% 
      # change which season each month belongs to in order to check effect of our season choices on abund
-  mutate(season = factor(dplyr::case_when(
-      month %in% c(1:2,12) ~ "Winter",
-      month %in% c(3:5) ~ "Spring",
-      month %in% c(6:8) ~ "Summer",
-      month %in% c(9:11)  ~ "Fall"
-    ), levels = c("Winter", "Spring", "Summer", "Fall")),
-   # mutate(season = factor(dplyr::case_when(
+  mutate(
+    # season = factor(dplyr::case_when(
+  #     month %in% c(1:2,12) ~ "Winter",
+  #     month %in% c(3:5) ~ "Spring",
+  #     month %in% c(6:8) ~ "Summer",
+  #     month %in% c(9:11)  ~ "Fall"
+  #   ), levels = c("Winter", "Spring", "Summer", "Fall")),
+  #   seasonYear = paste0(tolower(season),
+  #     case_when(
+  #       month %in% c(1:11) ~ year,
+  #       month == 12        ~ year+1)),
+   # season = factor(dplyr::case_when(
    #    month %in% c(2:4) ~ "Winter",
    #    month %in% c(5:7) ~ "Spring",
    #    month %in% c(8:10) ~ "Summer",
    #    month %in% c(11:12,1)  ~ "Fall"
    # ), levels = c("Winter", "Spring", "Summer", "Fall")),
-   seasonYear = paste0(tolower(season), year),
+    # seasonYear = paste0(tolower(season),
+    #   case_when(
+    #     month %in% c(2:12) ~ year,
+    #     month == 1         ~ year-1)),
    seasonYear = factor(seasonYear, levels = unique(seasonYear))) %>%
   # unique segment ID's and length for each
-  transmute(Sample.Label=TransectID,
+  transmute(Sample.Label=order,#TransectID,
             # Region.Label = SurveyID,
-            # Region.Label = season,
-            Region.Label = seasonYear,
+            Region.Label = season,
+            # Region.Label = seasonYear,
             Effort = st_length(geometry),
             Area=B) %>% 
   group_by(Region.Label,Area,Sample.Label) %>% 
